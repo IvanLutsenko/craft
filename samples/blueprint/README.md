@@ -1,5 +1,7 @@
 # Blueprint
 
+Original deck: <https://ivan.nullptr.party/res/podlodka-16-crash-to-jira.html>. It is the real reference: open it and page through before writing a new theme. `theme.css` here only shows how its techniques map onto Craft roles.
+
 Talk: "Crash to Jira", Podlodka. No holiday: a short technical deck styled as an engineering drawing.
 
 - Palette: navy paper, pale cyan lines, amber for the one thing that matters.

@@ -406,7 +406,7 @@
     const from = previous;
     previous = current;
 
-    // Only a move to another slide crossfades; a reveal step on the same
+    // Only a move to another slide fades in; a reveal step on the same
     // slide, the first frame and a return from the overview cut.
     const slideChange = from !== null && from !== current && slides[from]?.dataset.source !== slides[current].dataset.source;
     if (slideChange) deck.dataset.change = 'slide';

@@ -1,6 +1,6 @@
 # Theme samples
 
-Five themes taken from real talks by Ivan Lutsenko. They are reading material for a new deck theme, not presets. Rules for a new theme are in [deck theme](../references/slides/theme.md).
+Five themes taken from real talks by Ivan Lutsenko. They are reading material for a new deck theme, not presets. Each README links the original deck on the web where it is published: that deck, not `theme.css`, is the visual reference. Rules for a new theme are in [deck theme](../references/slides/theme.md).
 
 Each folder holds:
 

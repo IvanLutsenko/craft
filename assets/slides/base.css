@@ -55,28 +55,15 @@ body {
 
 .slide[data-active] { display: block; }
 
-/* In the show, a move to another slide crossfades, like a projector slide
-   change: every page stays laid out in one grid cell, the new one fades in
-   over the one it replaces. deck.js marks such a move with data-change;
-   a reveal step, the first frame and a return from the overview cut.
-   Motion off and print cut as well. */
+/* In the show, a move to another slide fades the new content in over the
+   slide's own paper; the previous slide is gone at once, so two slides are
+   never on screen together and the paper never blinks. deck.js marks such
+   a move with data-change. A reveal step, the first frame, a return from
+   the overview, motion off and print cut. */
+@keyframes slide-in { from { opacity: 0; } }
 @media screen {
-  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide {
-    display: block;
-    grid-area: 1 / 1;
-    opacity: 0;
-    visibility: hidden;
-  }
-  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide[data-active] {
-    z-index: 1;
-    opacity: 1;
-    visibility: visible;
-  }
-  .deck[data-change="slide"]:not([data-mode="grid"], [data-mode="strip"]) .slide {
-    transition: opacity var(--slide-fade, 600ms) ease, visibility 0s linear var(--slide-fade, 600ms);
-  }
-  .deck[data-change="slide"]:not([data-mode="grid"], [data-mode="strip"]) .slide[data-active] {
-    transition: opacity var(--slide-fade, 600ms) ease, visibility 0s;
+  .deck[data-change="slide"]:not([data-mode="grid"], [data-mode="strip"]) .slide[data-active] > .slide-canvas {
+    animation: slide-in var(--slide-fade, 400ms) ease both;
   }
 }
 

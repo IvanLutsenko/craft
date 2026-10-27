@@ -1,5 +1,7 @@
 # Tsagan Sar
 
+Original deck: <https://ivan.nullptr.party/res/ci-cd-lovestory-tsagan-sar.html>. It is the real reference: open it and page through before writing a new theme. `theme.css` here only shows how its techniques map onto Craft roles.
+
 Talk: "CI/CD: a love story", Tsagan Sar edition, February. The same talk as the New Year sample, redressed for the Mongolian lunar New Year.
 
 - Palette: cream paper, burgundy, gold, a touch of steppe green and sky blue.

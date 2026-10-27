@@ -1,5 +1,7 @@
 # Space
 
+Original deck: <https://ivan.nullptr.party/res/crashlytics-talk.html>. It is the real reference: open it and page through before writing a new theme. `theme.css` here only shows how its techniques map onto Craft roles.
+
 Talk: "Crashlytics: from manual analysis to a team of subagents". A launch metaphor: crashes as failed launches, the tooling as a mission control. Fits Cosmonautics Day on April 12.
 
 - Palette: deep navy, sand for headings, steel blue for lines, amber as the accent.

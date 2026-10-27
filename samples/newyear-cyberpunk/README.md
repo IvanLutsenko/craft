@@ -1,5 +1,7 @@
 # New Year x Cyberpunk 2077
 
+Original deck: <https://ivan.nullptr.party/res/ci-cd-lovestory.html>. It is the real reference: open it and page through before writing a new theme. `theme.css` here only shows how its techniques map onto Craft roles.
+
 Talk: "CI/CD: a love story", December. The holiday met the game the audience knew, and the deck looked like a neon city on New Year's Eve.
 
 - Palette: night navy, magenta, cyan and acid yellow. Magenta is the accent, cyan draws lines and marks.

@@ -137,7 +137,7 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
      "animation switched the page"),
     ("content covers the panel",
      STATEMENT.format(key="cover", body='<h2 class="type-hero">Statement</h2><div class="cover-all"></div>'),
-     ".slide { isolation: auto !important; z-index: auto !important; } .cover-all { position: fixed; left: 0; right: 0; bottom: 0; height: 40vh; z-index: 50; background: var(--bg); }",
+     ".slide { isolation: auto !important; } .cover-all { position: fixed; left: 0; right: 0; bottom: 0; height: 40vh; z-index: 50; background: var(--bg); }",
      "", "is covered by"),
     ("hidden clip plays", GOOD,
      "", "setInterval(() => document.querySelectorAll('video').forEach((video) => video.play().catch(() => {})), 100);",
@@ -148,6 +148,16 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("counter wraps the number",
      METRIC.replace('class="scoreboard"', 'class="scoreboard" style="width:6cqw"').replace("12,400", "11 111"),
      "[data-count] { white-space: normal !important; font-variant-numeric: proportional-nums !important; }", "", "counter number takes"),
+    ("decor under the text",
+     STATEMENT.format(key="decor", body='<h2 class="type-hero">Statement</h2>'),
+     ".slide { background: repeating-linear-gradient(45deg, rgb(40 0 90) 0 3px, transparent 3px 12px), var(--bg) !important; }",
+     "", "shows under the text"),
+    ("data series collide", GOOD, ":root, :root[data-theme] { --craft-data-amber: var(--craft-accent-mark); }", "", "too close to tell apart"),
+    ("muted role too faint", GOOD, ":root, :root[data-theme] { --craft-muted: color-mix(in oklch, var(--craft-text) 25%, var(--craft-bg)); }", "", "muted labels on the page"),
+    ("text fades into a picture",
+     STATEMENT.format(key="fade", body='<h2 class="type-hero">Statement</h2>'),
+     ".slide { background: linear-gradient(var(--craft-text), var(--craft-text)) !important; }",
+     "", "on its real backdrop"),
 ]
 
 # Source rules the static check catches without a browser.
@@ -194,6 +204,10 @@ CASE_PASSES = {
     "print loses a page": "print",
     "bento tiles of different heights": "frames",
     "counter wraps the number": "motion",
+    "decor under the text": "frames",
+    "data series collide": "",
+    "muted role too faint": "",
+    "text fades into a picture": "frames",
 }
 
 

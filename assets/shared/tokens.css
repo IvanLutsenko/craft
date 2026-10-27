@@ -95,7 +95,7 @@
      white or black works. Otherwise a quiet role drops out of the color and
      reads as dirt. */
   --craft-on-accent: #fff;
-  --craft-on-accent-muted: rgb(255 255 255 / .78);
+  --craft-on-accent-muted: rgb(255 255 255 / .9);
   --craft-on-accent-line: rgb(255 255 255 / .28);
   --craft-on-accent-disabled: rgb(255 255 255 / .45);
 
