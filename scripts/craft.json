@@ -658,7 +658,8 @@
         "end",
         "bento",
         "screenshot",
-        "iterations"
+        "iterations",
+        "harold"
       ],
       "fragments": [
         {
@@ -827,12 +828,25 @@
             "ITERATIONS": "html"
           },
           "dependencies": []
+        },
+        {
+          "id": "harold",
+          "path": "assets/slides/fragments/harold.html",
+          "purpose": "Closing meme: a themed Harold with two caption lines, the contact QR and the byline",
+          "placeholders": {
+            "HAROLD_IMAGE": "html",
+            "TOP_LINE": "text",
+            "BOTTOM_LINE": "text",
+            "QR_LINK": "html",
+            "AUTHOR": "text"
+          },
+          "dependencies": []
         }
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 68,
-      "catalogPrintPages": 68,
+      "catalogPages": 69,
+      "catalogPrintPages": 69,
       "catalogLayouts": [
         "title",
         "cover",
@@ -854,6 +868,7 @@
         "visual-comparison",
         "resource",
         "end",
+        "harold",
         "bento",
         "iterations"
       ],
@@ -1713,6 +1728,46 @@
           "signature": [
             ".iterations .iteration.is-current"
           ]
+        },
+        "harold": {
+          "job": "Close a talk with the author's signature meme: Harold in the deck's theme, the contact QR and the byline",
+          "useWhen": [
+            "this is the last slide of a talk by the author",
+            "the deck has a themed Harold picture"
+          ],
+          "avoidWhen": [
+            "the material has no speaker, such as a handout",
+            "the deck has no Harold picture yet; use end until it does"
+          ],
+          "variable": [
+            "the Harold picture, generated for this deck's theme",
+            "two meme lines",
+            "one contact as a QR code with its address"
+          ],
+          "fixed": [
+            "picture on the left, meme lines on the picture, byline top right, QR bottom right",
+            "meme lines are text, not part of the picture",
+            "no slide number",
+            "one contact"
+          ],
+          "slots": {
+            "HAROLD_IMAGE": "<img> of the themed Harold with a short alt",
+            "TOP_LINE": "Top meme line, for example \"Any questions\"",
+            "BOTTOM_LINE": "Bottom meme line, for example \"Just ask\"",
+            "QR_LINK": "Output of scripts/qr.py <address> --link",
+            "AUTHOR": "Author as on the cover"
+          },
+          "reveal": {
+            "default": "none",
+            "guidance": "The closing slide shows in full."
+          },
+          "alternatives": {
+            "end": "for material without the author's Harold"
+          },
+          "signature": [
+            ".s-harold",
+            ".harold-plate"
+          ]
         }
       },
       "catalogExamples": [
@@ -1979,6 +2034,14 @@
           "job": "The last thought and one contact close the talk",
           "useWhen": "Use as the last slide",
           "variable": "Change the final statement, the contact and the working QR code"
+        },
+        {
+          "id": "harold",
+          "name": "Harold",
+          "layout": "harold",
+          "job": "The author's themed Harold closes the talk with one contact",
+          "useWhen": "Use as the last slide of a talk by the author",
+          "variable": "Change the picture for the theme, the two meme lines and the QR code"
         }
       ]
     }
@@ -2130,12 +2193,9 @@
         "references/workflow.md",
         "references/slides/narrative.md",
         "references/slides/selection.md",
+        "references/slides/theme.md",
         "references/slides/design-language.md",
         "references/slides/authoring.md",
-        "references/slides/charts.md",
-        "references/slides/motion.md",
-        "references/slides/media.md",
-        "references/slides/code.md",
         "references/slides/qr.md"
       ],
       "slides-talk-ru": [
@@ -2145,9 +2205,21 @@
         "references/russian.md",
         "references/slides/narrative.md",
         "references/slides/selection.md",
+        "references/slides/theme.md",
+        "references/slides/design-language.md",
+        "references/slides/authoring.md",
+        "references/slides/qr.md"
+      ],
+      "slides-data": [
+        "SKILL.md",
+        "references/identity.md",
+        "references/workflow.md",
+        "references/slides/selection.md",
         "references/slides/design-language.md",
         "references/slides/authoring.md",
         "references/slides/charts.md",
+        "references/slides/motion.md",
+        "references/slides/media.md",
         "references/slides/code.md"
       ],
       "slides-review": [

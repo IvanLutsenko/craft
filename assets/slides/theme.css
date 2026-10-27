@@ -1294,6 +1294,45 @@
 /* the end needs no number, like the cover */
 .s-end .slide-number { display: none; }
 
+/* --- 15 Harold: the closing meme ---
+   The author's signature closing slide. A generated Harold in the deck's
+   theme fills the left, two meme lines sit on the picture, the byline
+   tops the right column and the contact QR closes it. The lines are text,
+   not part of the picture, so they stay editable and translatable. */
+.harold-plate {
+  position: absolute;
+  left: var(--pad-x); top: var(--pad-y); bottom: var(--pad-y);
+  width: 62cqw;
+  margin: 0;
+  overflow: hidden;
+  border: var(--rule) solid var(--line);
+}
+.harold-plate img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.harold-line {
+  position: absolute;
+  inset-inline: 2cqw;
+  text-align: center;
+  font: 800 4.6cqw/1 var(--font-display);
+  color: var(--craft-on-accent);
+  -webkit-text-stroke: .45cqw var(--craft-scrim);
+  paint-order: stroke fill;
+  text-wrap: balance;
+}
+.harold-line--top { top: 3cqh; }
+.harold-line--bottom { bottom: 3cqh; }
+.s-harold .byline {
+  left: auto; right: var(--pad-x); bottom: auto; top: var(--pad-y);
+  max-width: 24cqw; text-align: right; text-wrap: balance;
+}
+.s-harold .qr-link {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: var(--pad-y);
+  justify-items: end;
+}
+.s-harold .where { font-size: 1.5cqw; }
+.s-harold .slide-number { display: none; }
+
 /* ============================================================
    Reveal motion
 

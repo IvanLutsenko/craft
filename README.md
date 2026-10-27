@@ -11,7 +11,7 @@
   </picture>
 </a>
 
-> This is a fork of [Craft](https://github.com/pavelkorolevxyz/craft) by [Pavel Korolev](https://github.com/pavelkorolevxyz). The engine, checks and design system are his work. The fork replaces the fixed visual identity with themed decks built from samples. The original catalogs live at <https://pavelkorolevxyz.github.io/craft/>.
+> This is a fork of [Craft](https://github.com/pavelkorolevxyz/craft) by [Pavel Korolev](https://github.com/pavelkorolevxyz). The engine, checks and design system are his work. The fork gives every talk deck its own theme and closes it with a themed Harold, see [Themed decks](#themed-decks). The original catalogs live at <https://pavelkorolevxyz.github.io/craft/>.
 
 Craft is an agent skill and a design system for standalone HTML. It covers two formats: pages (reports, dashboards, documents, small tools) and 16:9 slide decks. A project is a folder with `index.html`, CSS, scripts and fonts. It opens over `file://` with no server, no build step and no network.
 
@@ -127,6 +127,17 @@ python3 scripts/deck_map.py ./output/talk 19 20       # page number to slide key
 python3 scripts/qr.py https://example.com/ --link     # inline SVG QR block with a visible link
 ```
 
+## Themed decks
+
+This fork drops the single visual identity for decks. Each talk gets a new theme, usually for the nearest holiday:
+
+- `scaffold.py` adds an empty `deck-theme.css` to a deck, loaded after the shared theme. The agent writes it fresh for each talk by the rules in [deck theme](references/slides/theme.md).
+- [samples/](samples/README.md) holds five themes from real talks: New Year x Cyberpunk, Tsagan Sar, Space, Blueprint and Ember. They are reading material, not presets.
+- `scripts/fetch_font.py "<Family>" <deck>` saves a Google Fonts family with Cyrillic into the deck and prints the `@font-face` rules, so a themed deck still works offline.
+- The `harold` layout closes a talk: a Harold picture generated for the theme, two meme lines as text, the byline and the contact QR.
+
+Interfaces keep the original Craft identity.
+
 ## Layout
 
 ```text
@@ -136,6 +147,7 @@ assets/slides/          deck CSS and mechanics, starter, fragments
 references/             rules for the agent, one file per topic
 catalog/                interface and slide catalogs, published to Pages
 site/                   Pages home page
+samples/                deck theme samples from real talks
 scripts/                create, compose, check, bundle, release, build
 scripts/craft.json      registry of formats, fragments, layouts and reading routes
 tests/                  behavior tests

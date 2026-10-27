@@ -11,7 +11,7 @@ This order fits a public talk.
 5. Before each chapter from the plan, a `section` numbered `01`, `02` with the same name as in the plan. Subsections get no divider. A one-slide chapter does not need one.
 6. A chapter holds episodes, described below. Each conclusion follows its episodes.
 7. Before the end you may collect conclusions in a "What I took away" list, revealed one at a time. The summary repeats conclusions already shown and adds no new ones.
-8. `end`: a closing line like "Thank you", the author with an optional event, one contact as a QR code. `QR_LINK` comes from `qr.py <address> --link`, see [QR](qr.md).
+8. `harold`: the author's closing slide, a Harold picture in the deck's theme with two meme lines, the byline and one contact as a QR code. See [deck theme](theme.md). `QR_LINK` comes from `qr.py <address> --link`, see [QR](qr.md). Material without the author's Harold closes with `end`: a closing line like "Thank you", the author with an optional event, one contact.
 
 Without an author, plan and chapters you get a short deck: `title`, content slides, `end`. A ten-slide deck rarely needs dividers.
 

@@ -1,0 +1,76 @@
+/* Sample: Blueprint. No holiday: an engineering drawing for a technical
+   talk. Navy paper, a cyan grid, a double frame and a title block. */
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-weight: 500 700;
+  src: url("fonts/cormorant-garamond.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-weight: 400 600;
+  src: url("fonts/ibm-plex-mono.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: dark;
+  --craft-bg: #0e1a2b;
+  --craft-surface: #142538;
+  --craft-surface-muted: #112031;
+  --craft-sunken: #09121f;
+  --craft-text: #e3eef7;
+  --craft-text-body: rgb(227 238 247 / .86);
+  --craft-muted: #a8c2d6;
+  --craft-line: rgb(126 190 220 / .28);
+  --craft-line-strong: #7ebedc;
+  --craft-accent: #f0b64b;
+  --craft-accent-mark: #f0b64b;
+  --craft-accent-fill: #8a5a0c;
+  --craft-accent-tint: rgb(240 182 75 / .14);
+  --craft-data-blue: #7ebedc;
+  --craft-data-amber: #f0b64b;
+  --craft-data-green: #8fcf9a;
+  --craft-error: #e2705c;
+  --craft-selection: rgb(126 190 220 / .3);
+  /* A book serif for words, a drafting mono for every number and label. */
+  --craft-font-display: "Cormorant Garamond", serif;
+  --craft-font-text: "IBM Plex Mono", monospace;
+  --craft-font-mono: "IBM Plex Mono", monospace;
+}
+
+/* The hero is set lowercase and light, like a drawing title. */
+.s-cover .type-hero,
+.s-title-card .type-hero { font-weight: 500; text-transform: lowercase; }
+
+/* Title block: the slide number reads as a sheet number. */
+.slide-number::before { content: "sheet "; color: var(--muted); }
+
+/* Decor layer: a 40-unit grid and a double frame. No motion: a drawing
+   does not move. */
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 2.5cqw),
+    repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 2.5cqw);
+  opacity: .35;
+}
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 1.2cqw;
+  z-index: -1;
+  pointer-events: none;
+  border: 1px solid var(--craft-line);
+  outline: 1px solid var(--craft-line);
+  outline-offset: .5cqw;
+}
+
+/* The cover is the poster: the same drawing paper, no stock red fill. */
+.s-cover.surface-accent { background: var(--bg); }
+.s-cover .lanes { display: none; }

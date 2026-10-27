@@ -4,6 +4,8 @@ Shared rules for every format. The chosen format sets sizes and interaction.
 
 ## Visual language
 
+This is the Craft identity for interfaces and an unthemed deck. A talk deck gets its own [theme](slides/theme.md), which replaces the palette, the fonts and the limits on decor below. The rules on meaning still hold: color never carries meaning alone, motion explains, labels are not set in spaced caps.
+
 - Neutral light and dark surfaces, a red brand accent, rectangular panels and 1 px lines.
 - Geologica for headings and key numbers, Onest for body text and controls, a monospace font only for code.
 - Red marks an action, a selection, a state, a signal, a data link or the main conclusion. Do not alternate red and neutral sections, slides or rows for rhythm.

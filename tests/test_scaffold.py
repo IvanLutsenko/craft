@@ -60,6 +60,14 @@ def validate_output(key: str, output: Path) -> None:
         assert target.is_file(), f"{key}: broken asset {value}"
 
 
+def test_deck_theme_layer(output: Path) -> None:
+    """A deck gets its own theme file, loaded after the shared theme so it can override it."""
+    assert (output / "deck-theme.css").is_file(), "the deck has no deck-theme.css"
+    html = (output / "index.html").read_text(encoding="utf-8")
+    shared, theme = html.find('href="slides.css"'), html.find('href="deck-theme.css"')
+    assert shared != -1 and theme > shared, "deck-theme.css must load after slides.css"
+
+
 def test_catalog_favicons() -> None:
     pages = sorted(CATALOG.rglob("*.html"))
     assert pages, "public catalogs not found"
@@ -466,6 +474,7 @@ def main() -> None:
             validate_output(key, output)
             print(f"✓ {key}")
         test_scaffold_inputs(root)
+        test_deck_theme_layer(outputs["slides-deck"])
         test_catalog_favicons()
         test_static_resources(root)
         test_delivery_and_bundle(root)

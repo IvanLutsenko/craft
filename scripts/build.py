@@ -24,6 +24,7 @@ RUNTIME_SCRIPTS = (
     "scripts/cdp.mjs",
     "scripts/deck_probe.mjs",
     "scripts/qr.py",
+    "scripts/fetch_font.py",
     "scripts/deck_map.py",
     "scripts/release.py",
 )
@@ -76,13 +77,14 @@ def main() -> None:
     common = ["LICENSE", "assets/shared", "references/identity.md", "references/surfaces.md"]
     packages = {
         "craft-interface": files_under(*common, "assets/interfaces", "references/interfaces", "catalog/interfaces"),
-        "craft-slides": files_under(*common, "assets/slides", "references/slides", "catalog/slides"),
+        "craft-slides": files_under(*common, "assets/slides", "references/slides", "catalog/slides", "samples"),
         "craft-complete": files_under(
             "LICENSE",
             "SKILL.md",
             "assets",
             "catalog",
             "references",
+            "samples",
             *RUNTIME_SCRIPTS,
         ),
     }

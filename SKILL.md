@@ -11,7 +11,7 @@ description: "Use Craft for standalone HTML pages and slide decks."
 
 ## Slides
 
-Before HTML, read the [talk outline](references/slides/narrative.md) and [choosing a layout](references/slides/selection.md), then the [visual language](references/slides/design-language.md) and the [mechanics](references/slides/authoring.md). Get the chosen fragment's contract from `compose.py --list-placeholders`.
+Before HTML, read the [talk outline](references/slides/narrative.md) and [choosing a layout](references/slides/selection.md), then the [deck theme](references/slides/theme.md), the [visual language](references/slides/design-language.md) and the [mechanics](references/slides/authoring.md). Get the chosen fragment's contract from `compose.py --list-placeholders`.
 
 By content:
 - numeric chart: [charts](references/slides/charts.md);

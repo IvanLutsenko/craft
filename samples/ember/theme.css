@@ -1,0 +1,62 @@
+/* Sample: Ember. No holiday: a calm dark pitch. Charcoal, one warm glow
+   behind the title and a coral-to-yellow gradient on the hero line. */
+@font-face {
+  font-family: "Inter";
+  font-weight: 400 800;
+  src: url("fonts/inter.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: 400 600;
+  src: url("fonts/jetbrains-mono.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: dark;
+  --craft-bg: #12121a;
+  --craft-surface: #1a1a2e;
+  --craft-surface-muted: #161624;
+  --craft-sunken: #0a0a0f;
+  --craft-text: #e8e6e3;
+  --craft-text-body: rgb(232 230 227 / .84);
+  --craft-muted: rgb(232 230 227 / .62);
+  --craft-line: #2a2a3e;
+  --craft-line-strong: #e8e6e3;
+  --craft-accent: #ff8a8a;
+  --craft-accent-mark: #ff6b6b;
+  --craft-accent-fill: #b83a3a;
+  --craft-accent-tint: rgb(255 107 107 / .12);
+  --craft-data-blue: #4ecdc4;
+  --craft-data-amber: #ffe66d;
+  --craft-data-green: #a78bfa;
+  --craft-selection: rgb(255 107 107 / .3);
+  --craft-font-display: "Inter", sans-serif;
+  --craft-font-text: "Inter", sans-serif;
+  --craft-font-mono: "JetBrains Mono", monospace;
+}
+
+/* The signature: a warm gradient on the hero line only. Every other
+   heading stays plain, or the gradient stops meaning "the title". */
+.s-cover .type-hero,
+.s-title-card .type-hero {
+  background: linear-gradient(135deg, var(--craft-accent-mark), var(--craft-data-amber));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* The default cover is a red fill; this theme keeps the charcoal. */
+.s-cover.surface-accent { background: var(--bg); color: var(--text); }
+.s-cover .lanes { display: none; }
+
+/* Decor layer: one soft glow behind the upper middle of the slide. */
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 30%, var(--craft-accent-tint), transparent 60%);
+}

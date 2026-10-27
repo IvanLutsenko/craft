@@ -13,6 +13,7 @@ Create the project with `scaffold.py --lang ru`. The bundled fonts cover Cyrilli
 | Plan title | План |
 | Speaker context title | Обо мне |
 | End slide line | Спасибо за внимание |
+| Harold lines, top and bottom | БУДУТ ВОПРОСЫ / ОБРАЩАЙТЕСЬ |
 | Takeaway summary title | Что я из этого вынес (вынесла) |
 | Comparison sides | Было / Стало |
 | Source caption | Источник |

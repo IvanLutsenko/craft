@@ -23,6 +23,12 @@ WEB_FONT_LINKS = (
 )
 
 
+DECK_THEME_STUB = """/* Deck theme. Write it fresh for this talk, see references/slides/theme.md.
+   Override --craft-* roles for :root and :root[data-theme="light"],
+   then add decor behind the content. */
+"""
+
+
 def escaped_title(value: str) -> str:
     return html.escape(value, quote=True)
 
@@ -89,6 +95,11 @@ def scaffold_slides(target: Path, title: str, lang: str, delivery: str, author: 
     }
     for source, output in replacements.items():
         html = html.replace(source, output, 1)
+    # Every deck gets its own theme, written fresh from the samples. It loads
+    # last, so it overrides the roles and adds the decor. See references/slides/theme.md.
+    (target / "deck-theme.css").write_text(DECK_THEME_STUB, encoding="utf-8")
+    html = html.replace('<link rel="stylesheet" href="slides.css">',
+                        '<link rel="stylesheet" href="slides.css">\n<link rel="stylesheet" href="deck-theme.css">', 1)
     if author:
         # A talk with an author opens with a cover. The title card stays for material without a speaker.
         html = re.sub(r'  <section class="slide s-title-card".*?</section>', lambda _: cover_slide(title, author), html, count=1, flags=re.S)

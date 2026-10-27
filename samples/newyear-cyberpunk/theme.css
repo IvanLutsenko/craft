@@ -1,0 +1,89 @@
+/* Sample: New Year x Cyberpunk 2077. Neon on night navy, a garland
+   along the top edge, falling snow and a slow neon grid. */
+@font-face {
+  font-family: "Cyberpunk RUS";
+  src: url("fonts/cyberpunk-rus.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "OCR-A Becker";
+  src: url("fonts/ocr-a-becker.woff2") format("woff2");
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 400 600;
+  src: url("fonts/ibm-plex-sans.woff2") format("woff2");
+  font-display: swap;
+}
+
+/* One mode. The light toggle keeps the same neon night. */
+:root,
+:root[data-theme="light"] {
+  color-scheme: dark;
+  --craft-bg: #0a0e27;
+  --craft-surface: #121840;
+  --craft-surface-muted: #0f1435;
+  --craft-sunken: #060918;
+  --craft-text: #eafcff;
+  --craft-text-body: rgb(234 252 255 / .86);
+  --craft-muted: rgb(234 252 255 / .68);
+  --craft-line: rgb(0 255 255 / .24);
+  --craft-line-strong: #00ffff;
+  --craft-accent: #ff5cb0;
+  --craft-accent-mark: #ff0080;
+  --craft-accent-fill: #b8005f;
+  --craft-accent-tint: rgb(255 0 128 / .16);
+  --craft-data-blue: #00e5ff;
+  --craft-data-amber: #ffe600;
+  --craft-data-green: #39ff6a;
+  --craft-selection: rgb(255 0 128 / .35);
+  /* The display face is the readable mono. The Cyberpunk face is only for
+     the hero line on the cover, see below. */
+  --craft-font-display: "OCR-A Becker", "IBM Plex Sans", sans-serif;
+  --craft-font-text: "IBM Plex Sans", sans-serif;
+}
+
+/* The signature: the brand face, a neon glow, the hero line only. */
+.s-cover .type-hero,
+.s-title-card .type-hero {
+  font-family: "Cyberpunk RUS", var(--font-display);
+  color: var(--craft-data-blue);
+  text-shadow: 0 0 .4cqw var(--craft-data-blue), 0 0 1.4cqw var(--craft-accent-mark);
+}
+
+/* Decor layer: neon grid, snow and a garland. Pseudo-elements only, so the
+   checks never see decor as text. base.css stops the motion on M. */
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(.25cqw .25cqw at 12% 20%, var(--craft-text), transparent),
+    radial-gradient(.2cqw .2cqw at 38% 8%, var(--craft-data-blue), transparent),
+    radial-gradient(.3cqw .3cqw at 64% 30%, var(--craft-text), transparent),
+    radial-gradient(.2cqw .2cqw at 86% 12%, var(--craft-accent), transparent),
+    repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 6cqw),
+    repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 6cqw);
+  background-size: 100% 50%, 100% 50%, 100% 50%, 100% 50%, auto, auto;
+  opacity: .5;
+  animation: ny-snow 14s linear infinite;
+}
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: .6cqh;
+  z-index: -1;
+  background: repeating-linear-gradient(90deg,
+    var(--craft-accent-mark) 0 9%, var(--craft-data-blue) 9% 18%, var(--craft-data-amber) 18% 27%);
+}
+@keyframes ny-snow {
+  to { background-position: 0 100%, 0 100%, 0 100%, 0 100%, 0 0, 0 0; }
+}
+
+/* The cover is the poster: night navy instead of the stock red fill. */
+.s-cover.surface-accent { background: var(--bg); }
+.s-cover .lanes { display: none; }
