@@ -2069,7 +2069,11 @@
     "--scroll-duration",
     "--span",
     "--wipe",
-    "--past"
+    "--past",
+    "--curtain-paint",
+    "--curtain-animation",
+    "--curtain-easing",
+    "--rise-animation"
   ],
   "requirements": {
     "fontFiles": 4,

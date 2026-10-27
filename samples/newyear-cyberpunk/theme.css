@@ -87,3 +87,31 @@
 /* The cover is the poster: night navy instead of the stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
+
+/* Motion. A chapter change glitches in as neon scan bands, headings
+   flicker on like a sign. The curtain covers the slide from 45% to 55%. */
+:root {
+  --curtain-paint: repeating-linear-gradient(0deg,
+    var(--craft-accent-mark) 0 3cqh, var(--craft-bg) 3cqh 6cqh,
+    var(--craft-data-blue) 6cqh 7cqh, var(--craft-bg) 7cqh 11cqh);
+  --curtain-animation: ny-glitch;
+  --curtain-easing: linear;
+  --rise-animation: ny-flicker;
+}
+@keyframes ny-glitch {
+  0% { clip-path: inset(0 0 100% 0); translate: 0 0; }
+  15% { clip-path: inset(0 0 62% 0); translate: -3% 0; }
+  30% { clip-path: inset(0 0 24% 0); translate: 2% 0; }
+  45%, 55% { clip-path: inset(0); translate: 0 0; }
+  70% { clip-path: inset(30% 0 0 0); translate: -2% 0; }
+  85% { clip-path: inset(72% 0 0 0); translate: 3% 0; }
+  100% { clip-path: inset(100% 0 0 0); translate: 0 0; }
+}
+@keyframes ny-flicker {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  30% { opacity: .2; }
+  45% { opacity: 1; }
+  55% { opacity: .5; }
+  70%, 100% { opacity: 1; }
+}
