@@ -10,5 +10,5 @@ Talk: "CI/CD: a love story", Tsagan Sar edition, February. The same talk as the 
 Lessons from the original:
 
 - Gold text on cream fails contrast. Gold goes to marks and the frame, headings are burgundy.
-- Cormorant runs small and thin; body text needs a size step up.
+- Cormorant runs small and thin. Craft sizes text in slide units, so pick a body face that holds up at those sizes, or set the size on the text roles, not on the slide.
 - A mascot by the page number works well as a second signature. Keep it as an image with an empty alt.

@@ -236,6 +236,9 @@
   right: var(--pad-x); bottom: var(--pad-y);
   font: 700 2.9cqw/1 var(--font-display); letter-spacing: -.03em;
   opacity: .92;
+  /* A deck theme may bring a face without tabular digits, where 13 and 14
+     differ in width. A fixed box keeps the number from moving between steps. */
+  min-width: 4em; text-align: right;
 }
 .slide-number span {
   font: 500 .5em/1 var(--font-text); letter-spacing: .04em;
@@ -1296,13 +1299,16 @@
 
 /* --- 15 Harold: the closing meme ---
    The author's signature closing slide. A generated Harold in the deck's
-   theme fills the left, two meme lines sit on the picture, the byline
-   tops the right column and the contact QR closes it. The lines are text,
-   not part of the picture, so they stay editable and translatable. */
+   theme and, beside it, the byline over the contact QR, the pair centered
+   like a poster. The picture keeps a 4:3 frame no taller than two thirds
+   of the slide: larger, a generated image turns soft on a projector. The
+   meme lines are text, not part of the picture, so they stay editable. */
+.s-harold .pad { flex-direction: row; align-items: center; justify-content: center; gap: 6cqw; }
 .harold-plate {
-  position: absolute;
-  left: var(--pad-x); top: var(--pad-y); bottom: var(--pad-y);
-  width: 62cqw;
+  position: relative;
+  flex: none;
+  height: 66cqh;
+  aspect-ratio: 4 / 3;
   margin: 0;
   overflow: hidden;
   border: var(--rule) solid var(--line);
@@ -1310,26 +1316,18 @@
 .harold-plate img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .harold-line {
   position: absolute;
-  inset-inline: 2cqw;
+  inset-inline: 1.5cqw;
   text-align: center;
-  font: 800 4.6cqw/1 var(--font-display);
+  font: 800 3.4cqw/1 var(--font-display);
   color: var(--craft-on-accent);
-  -webkit-text-stroke: .45cqw var(--craft-scrim);
+  -webkit-text-stroke: .35cqw var(--craft-scrim);
   paint-order: stroke fill;
   text-wrap: balance;
 }
-.harold-line--top { top: 3cqh; }
-.harold-line--bottom { bottom: 3cqh; }
-.s-harold .byline {
-  left: auto; right: var(--pad-x); bottom: auto; top: var(--pad-y);
-  max-width: 24cqw; text-align: right; text-wrap: balance;
-}
-.s-harold .qr-link {
-  position: absolute;
-  right: var(--pad-x);
-  bottom: var(--pad-y);
-  justify-items: end;
-}
+.harold-line--top { top: 2.5cqh; }
+.harold-line--bottom { bottom: 2.5cqh; }
+.harold-side { display: grid; justify-items: start; gap: 5cqh; }
+.s-harold .byline { position: static; max-width: 22cqw; text-wrap: balance; }
 .s-harold .where { font-size: 1.5cqw; }
 .s-harold .slide-number { display: none; }
 

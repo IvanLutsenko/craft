@@ -40,7 +40,7 @@ Generate a new picture for each deck. Each sample has a `harold-prompt.txt`. Bui
 - style and palette from the deck theme;
 - composition: the face in the middle, calm bands at the top and bottom for the meme lines;
 - no text, letters or captions in the picture;
-- landscape, about 3:2, at least 1600 px wide.
+- 4:3, at least 1600 px wide.
 
 The `drawbridge` plugin turns a short brief into a prompt for the chosen image model. Save the result as `media/harold.webp` and pass it as `HAROLD_IMAGE`. The meme lines are text in the deck language; Russian words are in [material in Russian](../russian.md).
 

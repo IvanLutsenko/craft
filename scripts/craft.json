@@ -1745,7 +1745,7 @@
             "one contact as a QR code with its address"
           ],
           "fixed": [
-            "picture on the left, meme lines on the picture, byline top right, QR bottom right",
+            "a 4:3 picture and, beside it, the byline over the QR, the pair centered",
             "meme lines are text, not part of the picture",
             "no slide number",
             "one contact"

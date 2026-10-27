@@ -39,10 +39,9 @@
 }
 
 /* Headings are burgundy, gold stays for marks only: gold text on cream
-   fails contrast. Cormorant runs small, so the body text grows a step. */
+   fails contrast. */
 .slide:not(.surface-accent) .type-hero,
 .slide:not(.surface-accent) .type-title { color: var(--craft-accent); }
-.slide { font-size: 1.08em; }
 
 /* Decor layer: a burgundy band with a gold meander on all four edges.
    It is one SVG tile per side, repeated. Content keeps the plain paper. */
