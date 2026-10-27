@@ -11,6 +11,8 @@
   </picture>
 </a>
 
+> This is a fork of [Craft](https://github.com/pavelkorolevxyz/craft) by [Pavel Korolev](https://github.com/pavelkorolevxyz). The engine, checks and design system are his work. The fork replaces the fixed visual identity with themed decks built from samples. The original catalogs live at <https://pavelkorolevxyz.github.io/craft/>.
+
 Craft is an agent skill and a design system for standalone HTML. It covers two formats: pages (reports, dashboards, documents, small tools) and 16:9 slide decks. A project is a folder with `index.html`, CSS, scripts and fonts. It opens over `file://` with no server, no build step and no network.
 
 The repo holds the tokens, CSS, markup fragments, starters, the rules the agent reads and the scripts that create, check and release a project.
