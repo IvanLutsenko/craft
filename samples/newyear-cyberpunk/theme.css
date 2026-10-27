@@ -69,12 +69,19 @@
 .s-cover .lanes { display: none; }
 
 /* Animated decor lives on one deck-wide layer under every slide, so a
-   slide change never restarts it. Slides are transparent in the show and
-   keep their paper in the overview and in print. base.css stops the motion on M. */
+   slide change never restarts it. base.css stops the motion on M. */
 @media screen {
-  body { background: var(--craft-bg); }
   .deck { position: relative; z-index: 1; }
-  .deck:not([data-mode="grid"], [data-mode="strip"]) :is(.slide:not(.surface-accent), .s-cover.surface-accent) { background: transparent; }
+  /* The slide is a panel: 95% night paper with a neon frame and glow,
+     the decor shows around it and only faintly through it. */
+  :root { --stage-pad: 6vh; }
+  body { background: var(--craft-sunken); }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide {
+    box-shadow: 0 0 0 3px var(--craft-accent-mark), 0 0 20px rgb(255 0 128 / .5), 0 0 40px rgb(0 255 255 / .3);
+  }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide:not(.surface-accent) {
+    background: rgb(10 14 39 / .95);
+  }
   body::before {
     content: "";
     position: fixed;

@@ -69,12 +69,18 @@
 }
 
 /* Animated decor lives on one deck-wide layer under every slide, so a
-   slide change never restarts it. Slides are transparent in the show and
-   keep their paper in the overview and in print. base.css stops the motion on M. */
+   slide change never restarts it. base.css stops the motion on M. */
 @media screen {
-  body { background: var(--craft-bg); }
   .deck { position: relative; z-index: 1; }
-  .deck:not([data-mode="grid"], [data-mode="strip"]) :is(.slide:not(.surface-accent), .s-cover.surface-accent) { background: transparent; }
+  /* The slide is a panel: 95% cream paper inside the ornament frame, on
+     a sky-to-steppe backdrop; the rain shows around it and only faintly
+     through it. */
+  :root { --stage-pad: 6vh; }
+  body { background: linear-gradient(180deg, #b0e0f0 0%, #fff8e7 30%, #f5e6c8 100%); }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide { box-shadow: 0 4px 30px rgb(218 165 32 / .25); }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide:not(.surface-accent) {
+    background: rgb(255 248 231 / .95);
+  }
   /* Optional holiday decor: a slow rain of petals, buuz and sparkles,
      drawn inside SVG tiles, so it is paint, not text. The ornament frame
      stays on the slide: it does not move. */
