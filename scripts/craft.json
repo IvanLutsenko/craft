@@ -2064,16 +2064,11 @@
     "--value",
     "--media-ratio",
     "--chars",
-    "--order",
     "--run-delay",
     "--scroll-duration",
     "--span",
     "--wipe",
-    "--past",
-    "--curtain-paint",
-    "--curtain-animation",
-    "--curtain-easing",
-    "--rise-animation"
+    "--past"
   ],
   "requirements": {
     "fontFiles": 4,

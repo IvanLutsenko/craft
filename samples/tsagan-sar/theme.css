@@ -62,22 +62,25 @@
    ornament frame on top. The stock diagonal lanes do not belong here. */
 .s-cover .lanes { display: none; }
 
-/* The ornament tiles, shared by the frame and the curtain. */
+/* The ornament tiles of the frame. */
 :root {
   --meander: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 48'%3E%3Crect width='20' height='48' fill='%238B1A2B'/%3E%3Cpath d='M10,0 C10,4 3,4 3,12 C3,20 10,20 10,24 C10,28 17,28 17,36 C17,44 10,44 10,48' fill='none' stroke='%23DAA520' stroke-width='2'/%3E%3Ccircle cx='4' cy='12' r='1.8' fill='%23F0D060'/%3E%3Ccircle cx='16' cy='36' r='1.8' fill='%23F0D060'/%3E%3C/svg%3E");
   --meander-row: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 20'%3E%3Crect width='48' height='20' fill='%238B1A2B'/%3E%3Cpath d='M0,10 C4,10 4,3 12,3 C20,3 20,10 24,10 C28,10 28,17 36,17 C44,17 44,10 48,10' fill='none' stroke='%23DAA520' stroke-width='2'/%3E%3C/svg%3E");
 }
 
-/* Motion. A chapter change unrolls a burgundy cloth with gold bands from
-   the top, like a festive banner; headings appear softly, without travel.
-   The cloth covers the slide from 45% to 55%. */
-:root {
-  --curtain-paint:
-    var(--meander-row) left top / auto 2.4cqw repeat-x,
-    var(--meander-row) left bottom / auto 2.4cqw repeat-x,
-    var(--craft-accent-fill);
-  --curtain-animation: ts-banner;
-  --rise-animation: ts-appear;
+/* Optional holiday decor: a slow rain of petals, buuz and sparkles.
+   The emoji are drawn inside SVG tiles, so they are paint, not text, and
+   they stop with the rest of the motion on M. */
+.slide::after {
+  content: "";
+  position: absolute;
+  inset: 1.3cqw;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='26'>%F0%9F%8C%B8</text><text x='130' y='150' font-size='20'>%E2%9C%A8</text><text x='70' y='250' font-size='24'>%F0%9F%A5%9F</text></svg>") 0 0 / 14cqw 21cqw,
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='110' y='60' font-size='18'>%F0%9F%8C%B8</text><text x='30' y='190' font-size='14'>%E2%9C%A8</text></svg>") 0 0 / 9cqw 13.5cqw;
+  opacity: .35;
+  animation: ts-rain 18s linear infinite;
 }
-@keyframes ts-banner { 0% { translate: 0 -100%; } 45%, 55% { translate: 0 0; } 100% { translate: 0 100%; } }
-@keyframes ts-appear { from { opacity: 0; } }
+@keyframes ts-rain { to { background-position: 0 21cqw, 0 13.5cqw; } }

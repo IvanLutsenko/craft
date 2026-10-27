@@ -60,13 +60,3 @@
   pointer-events: none;
   background: radial-gradient(ellipse at 50% 30%, var(--craft-accent-tint), transparent 60%);
 }
-
-/* Motion. Calm: a chapter change fades through the warm glow instead of
-   a sweep. Headings keep the stock rise. The glow covers the slide from
-   45% to 55%. */
-:root {
-  --curtain-paint: radial-gradient(ellipse at 50% 40%, var(--craft-accent-fill), var(--craft-bg) 70%);
-  --curtain-animation: ember-glow;
-  --curtain-easing: ease-in-out;
-}
-@keyframes ember-glow { 0% { opacity: 0; } 45%, 55% { opacity: 1; } 100% { opacity: 0; } }

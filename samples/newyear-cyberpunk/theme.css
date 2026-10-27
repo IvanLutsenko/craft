@@ -52,8 +52,9 @@
   text-shadow: 0 0 .4cqw var(--craft-data-blue), 0 0 1.4cqw var(--craft-accent-mark);
 }
 
-/* Decor layer: neon grid, snow and a garland. Pseudo-elements only, so the
-   checks never see decor as text. base.css stops the motion on M. */
+/* Decor layer: a neon grid and a rain of snowflakes, trees and gifts.
+   The emoji are drawn inside SVG tiles, so they are paint, not text, and
+   they stop with the rest of the motion on M. A garland runs on top. */
 .slide::before {
   content: "";
   position: absolute;
@@ -61,15 +62,12 @@
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(.25cqw .25cqw at 12% 20%, var(--craft-text), transparent),
-    radial-gradient(.2cqw .2cqw at 38% 8%, var(--craft-data-blue), transparent),
-    radial-gradient(.3cqw .3cqw at 64% 30%, var(--craft-text), transparent),
-    radial-gradient(.2cqw .2cqw at 86% 12%, var(--craft-accent), transparent),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='28'>%E2%9D%84%EF%B8%8F</text><text x='120' y='150' font-size='24'>%F0%9F%8E%84</text><text x='60' y='250' font-size='22'>%E2%9C%A8</text></svg>") 0 0 / 14cqw 21cqw,
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='100' y='50' font-size='18'>%E2%9D%84%EF%B8%8F</text><text x='30' y='180' font-size='16'>%F0%9F%8E%81</text></svg>") 0 0 / 9cqw 13.5cqw,
     repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 6cqw),
     repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 6cqw);
-  background-size: 100% 50%, 100% 50%, 100% 50%, 100% 50%, auto, auto;
   opacity: .5;
-  animation: ny-snow 14s linear infinite;
+  animation: ny-rain 16s linear infinite;
 }
 .slide::after {
   content: "";
@@ -80,38 +78,8 @@
   background: repeating-linear-gradient(90deg,
     var(--craft-accent-mark) 0 9%, var(--craft-data-blue) 9% 18%, var(--craft-data-amber) 18% 27%);
 }
-@keyframes ny-snow {
-  to { background-position: 0 100%, 0 100%, 0 100%, 0 100%, 0 0, 0 0; }
-}
+@keyframes ny-rain { to { background-position: 0 21cqw, 0 13.5cqw, 0 0, 0 0; } }
 
 /* The cover is the poster: night navy instead of the stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
-
-/* Motion. A chapter change glitches in as neon scan bands, headings
-   flicker on like a sign. The curtain covers the slide from 45% to 55%. */
-:root {
-  --curtain-paint: repeating-linear-gradient(0deg,
-    var(--craft-accent-mark) 0 3cqh, var(--craft-bg) 3cqh 6cqh,
-    var(--craft-data-blue) 6cqh 7cqh, var(--craft-bg) 7cqh 11cqh);
-  --curtain-animation: ny-glitch;
-  --curtain-easing: linear;
-  --rise-animation: ny-flicker;
-}
-@keyframes ny-glitch {
-  0% { clip-path: inset(0 0 100% 0); translate: 0 0; }
-  15% { clip-path: inset(0 0 62% 0); translate: -3% 0; }
-  30% { clip-path: inset(0 0 24% 0); translate: 2% 0; }
-  45%, 55% { clip-path: inset(0); translate: 0 0; }
-  70% { clip-path: inset(30% 0 0 0); translate: -2% 0; }
-  85% { clip-path: inset(72% 0 0 0); translate: 3% 0; }
-  100% { clip-path: inset(100% 0 0 0); translate: 0 0; }
-}
-@keyframes ny-flicker {
-  0% { opacity: 0; }
-  20% { opacity: 1; }
-  30% { opacity: .2; }
-  45% { opacity: 1; }
-  55% { opacity: .5; }
-  70%, 100% { opacity: 1; }
-}

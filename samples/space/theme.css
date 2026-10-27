@@ -78,22 +78,3 @@
 /* The cover is the poster: open space instead of the stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
-
-/* Motion. A chapter change is a jump through deep space: a dark disk
-   with stars opens from the bottom left and closes into the top right.
-   Headings keep the stock rise, like a launch. The disk covers the slide
-   from 45% to 55%. */
-:root {
-  --curtain-paint:
-    radial-gradient(.2cqw .2cqw at 20% 30%, var(--craft-text), transparent),
-    radial-gradient(.15cqw .15cqw at 60% 70%, var(--craft-text-body), transparent),
-    radial-gradient(.2cqw .2cqw at 80% 20%, var(--craft-data-blue), transparent),
-    var(--craft-sunken);
-  --curtain-animation: space-jump;
-}
-@keyframes space-jump {
-  0% { clip-path: circle(0 at 0 100%); }
-  45%, 55% { clip-path: circle(150% at 0 100%); }
-  55.01% { clip-path: circle(150% at 100% 0); }
-  100% { clip-path: circle(0 at 100% 0); }
-}

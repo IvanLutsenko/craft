@@ -60,48 +60,6 @@
   }
   const statusLabels = { draft: labels.draft, skip: labels.skip };
 
-  function splitWords(heading) {
-    const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((node) => {
-      // A counter rewrites its own text, so its words stay whole.
-      if (node.parentElement.closest('[data-count], .word')) return;
-      const parts = node.textContent.split(/(\s+)/);
-      if (!parts.some((part) => part.trim())) return;
-      const fragment = document.createDocumentFragment();
-      parts.forEach((part) => {
-        if (!part) return;
-        if (!part.trim()) {
-          fragment.append(part);
-          return;
-        }
-        const word = document.createElement('span');
-        word.className = 'word';
-        const inner = document.createElement('span');
-        inner.textContent = part;
-        word.append(inner);
-        fragment.append(word);
-      });
-      node.replaceWith(fragment);
-    });
-  }
-
-  // Number the visual lines of split text on the page being shown. The
-  // count runs through the heading and its note, so the note follows.
-  function markLines(page) {
-    let line = -1;
-    let top = null;
-    page.querySelectorAll('.word').forEach((word) => {
-      const y = Math.round(word.getBoundingClientRect().top);
-      if (top === null || Math.abs(y - top) > 4) {
-        line += 1;
-        top = y;
-      }
-      word.style.setProperty('--line', line);
-    });
-  }
-
   // The author writes each slide once. For the showing we create a page
   // per step, each with one more revealed .frag.
   sourceSlides.forEach((source, sourceIndex) => {
@@ -131,13 +89,6 @@
       badge.textContent = source.dataset.statusLabel || statusLabels[status];
       canvas.append(badge);
     }
-
-    // Bento tiles appear in reading order.
-    source.querySelectorAll('.bento-tile').forEach((tile, order) => tile.style.setProperty('--order', order));
-
-    // Large headings and quotes rise line by line. Each word sits in its own mask;
-    // the line index comes from the real layout when the page is shown.
-    source.querySelectorAll('.type-hero, .s-statement .type-note, .s-quote blockquote, .s-quote figcaption').forEach(splitWords);
 
     // Reveal step. data-frag="with-previous" shows a part on the same
     // press as the previous one, so a label in a sibling container
@@ -441,7 +392,6 @@
   let current = pageFromHash();
   let previous = null;
   let revealed = [];
-  let leavingTimer = 0;
   let hideHelpAfterPageInput = false;
 
   function render(scroll = false) {
@@ -471,22 +421,10 @@
     revealed = !forward ? [] : step > 0
       ? [...page.querySelectorAll(`.frag[data-frag-step="${step}"]`)]
       : [page];
-    if (forward) markLines(page);
     revealed.forEach((element) => {
       element.setAttribute('data-reveal', '');
       animateCounters(element);
     });
-
-    // The page we left stays marked for a moment on a forward move to
-    // another slide. The theme may keep it on screen under a transition,
-    // such as the curtain before a chapter divider.
-    slides.forEach((slide) => slide.removeAttribute('data-leaving'));
-    clearTimeout(leavingTimer);
-    if (forward && slides[from] && slides[from].dataset.source !== page.dataset.source) {
-      const leaving = slides[from];
-      leaving.setAttribute('data-leaving', '');
-      leavingTimer = setTimeout(() => leaving.removeAttribute('data-leaving'), 1200);
-    }
 
     if (helpPageInput) helpPageInput.value = pad(current + 1);
     if (helpPageTotal) helpPageTotal.textContent = `/ ${total}`;

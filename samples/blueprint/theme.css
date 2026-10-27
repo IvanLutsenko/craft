@@ -74,20 +74,3 @@
 /* The cover is the poster: the same drawing paper, no stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
-
-/* Motion. A drawing does not move, so headings stand still. A chapter
-   change swaps the sheet: a fresh grid wipes in from the left and out to
-   the right. The sheet covers the slide from 45% to 55%. */
-:root {
-  --curtain-paint:
-    repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 2.5cqw),
-    repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 2.5cqw),
-    var(--craft-surface);
-  --curtain-animation: bp-sheet;
-  --rise-animation: none;
-}
-@keyframes bp-sheet {
-  0% { clip-path: inset(0 100% 0 0); }
-  45%, 55% { clip-path: inset(0); }
-  100% { clip-path: inset(0 0 0 100%); }
-}

@@ -4,11 +4,11 @@ Every talk gets a new theme. The [samples](../../samples/README.md) show the lev
 
 ## Pick the occasion
 
-Take the date of the talk. If a holiday the audience celebrates falls within about three weeks, use it: New Year, Lunar New Year or Tsagan Sar, Nauryz, March 8, Cosmonautics Day, Halloween and so on. If several fit, take the nearest. If none fits, build a mood from the topic, as the blueprint and ember samples do.
+Take the date of the talk. If a holiday the audience celebrates falls within about three weeks, use it: New Year, Lunar New Year or Tsagan Sar, Nauryz, March 8, Cosmonautics Day, Halloween and so on. If none fits, build a mood from the topic, as the blueprint and ember samples do.
 
 ## Study the samples
 
-Open two or three samples close to the occasion. Read each `README.md` and `theme.css`, and look at `original-cover.png`. Note the techniques, the signature and the lessons.
+Open two or three samples close to the occasion: `README.md`, `theme.css` and `original-cover.png`. Note the techniques, the signature and the lessons.
 
 ## Write deck-theme.css
 
@@ -19,7 +19,7 @@ Open two or three samples close to the occasion. Read each `README.md` and `them
 3. Cover. The cover is the poster of the theme. Replace the stock red fill and diagonal lanes on `.s-cover`.
 4. One signature. One element carries the identity: a brand face on the hero line, a gradient title, a sheet number. Everything else stays plain.
 5. Decor. Put it in `.slide::before` and `.slide::after` with `z-index: -1` and `pointer-events: none`: a grid, stars, snow, an ornament frame, a garland.
-6. Motion. Restyle the chapter curtain with `--curtain-paint`, `--curtain-animation` and `--curtain-easing`; its keyframes must cover the slide from 45% to 55%. Swap the heading rise with `--rise-animation`, or set it to `none`.
+6. Optional emoji rain for the holiday. Draw the emoji inside an SVG data URI tile and move it with `background-position` in a pseudo-element. Emoji as DOM text count as content. Text itself never moves: reveal steps simply appear.
 
 Rules:
 

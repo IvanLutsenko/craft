@@ -5,7 +5,7 @@ Talk: "CI/CD: a love story", Tsagan Sar edition, February. The same talk as the 
 - Palette: cream paper, burgundy, gold, a touch of steppe green and sky blue.
 - Type: Playfair Display for headings, Cormorant Garamond for reading.
 - Signature: the burgundy band with a gold meander framing every slide.
-- Decor: the ornament frame. The original also had petals floating down and a ground squirrel in a hat next to the page number.
+- Decor: the ornament frame and a slow rain of petal, buuz and sparkle emoji. The original also had a ground squirrel in a hat next to the page number.
 
 Lessons from the original:
 
