@@ -137,7 +137,7 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
      "animation switched the page"),
     ("content covers the panel",
      STATEMENT.format(key="cover", body='<h2 class="type-hero">Statement</h2><div class="cover-all"></div>'),
-     ".slide { isolation: auto !important; } .cover-all { position: fixed; left: 0; right: 0; bottom: 0; height: 40vh; z-index: 50; background: var(--bg); }",
+     ".slide { isolation: auto !important; z-index: auto !important; } .cover-all { position: fixed; left: 0; right: 0; bottom: 0; height: 40vh; z-index: 50; background: var(--bg); }",
      "", "is covered by"),
     ("hidden clip plays", GOOD,
      "", "setInterval(() => document.querySelectorAll('video').forEach((video) => video.play().catch(() => {})), 100);",

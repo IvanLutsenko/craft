@@ -406,6 +406,12 @@
     const from = previous;
     previous = current;
 
+    // Only a move to another slide crossfades; a reveal step on the same
+    // slide, the first frame and a return from the overview cut.
+    const slideChange = from !== null && from !== current && slides[from]?.dataset.source !== slides[current].dataset.source;
+    if (slideChange) deck.dataset.change = 'slide';
+    else delete deck.dataset.change;
+
     slides.forEach((slide, index) => {
       const active = index === current;
       slide.toggleAttribute('data-active', active);
@@ -499,6 +505,7 @@
     // depends on data-strip-direction. Opened by ?view=strip or by the
     // button, it starts vertical.
     if (on && mode === 'strip') deck.dataset.stripDirection ||= 'vertical';
+    delete deck.dataset.change;
     if (on) deck.dataset.mode = mode;
     else delete deck.dataset.mode;
     document.body.style.overflow = on ? 'auto' : 'hidden';

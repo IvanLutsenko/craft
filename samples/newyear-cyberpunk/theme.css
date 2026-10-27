@@ -52,23 +52,8 @@
   text-shadow: 0 0 .4cqw var(--craft-data-blue), 0 0 1.4cqw var(--craft-accent-mark);
 }
 
-/* Decor layer: a neon grid and a rain of snowflakes, trees and gifts.
-   The emoji are drawn inside SVG tiles, so they are paint, not text, and
-   they stop with the rest of the motion on M. A garland runs on top. */
-.slide::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='28'>%E2%9D%84%EF%B8%8F</text><text x='120' y='150' font-size='24'>%F0%9F%8E%84</text><text x='60' y='250' font-size='22'>%E2%9C%A8</text></svg>") 0 0 / 14cqw 21cqw,
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='100' y='50' font-size='18'>%E2%9D%84%EF%B8%8F</text><text x='30' y='180' font-size='16'>%F0%9F%8E%81</text></svg>") 0 0 / 9cqw 13.5cqw,
-    repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 6cqw),
-    repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 6cqw);
-  opacity: .5;
-  animation: ny-rain 16s linear infinite;
-}
+/* Decor on the slide: a garland along the top edge. It does not move,
+   so it can switch with the slide. */
 .slide::after {
   content: "";
   position: absolute;
@@ -78,8 +63,30 @@
   background: repeating-linear-gradient(90deg,
     var(--craft-accent-mark) 0 9%, var(--craft-data-blue) 9% 18%, var(--craft-data-amber) 18% 27%);
 }
-@keyframes ny-rain { to { background-position: 0 21cqw, 0 13.5cqw, 0 0, 0 0; } }
 
 /* The cover is the poster: night navy instead of the stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
+
+/* Animated decor lives on one deck-wide layer under every slide, so a
+   slide change never restarts it. Slides are transparent in the show and
+   keep their paper in the overview and in print. base.css stops the motion on M. */
+@media screen {
+  body { background: var(--craft-bg); }
+  .deck { position: relative; z-index: 1; }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) :is(.slide:not(.surface-accent), .s-cover.surface-accent) { background: transparent; }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='28'>%E2%9D%84%EF%B8%8F</text><text x='120' y='150' font-size='24'>%F0%9F%8E%84</text><text x='60' y='250' font-size='22'>%E2%9C%A8</text></svg>") 0 0 / 14vw 21vw,
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='100' y='50' font-size='18'>%E2%9D%84%EF%B8%8F</text><text x='30' y='180' font-size='16'>%F0%9F%8E%81</text></svg>") 0 0 / 9vw 13.5vw,
+      repeating-linear-gradient(0deg, var(--craft-line) 0 1px, transparent 1px 6vw),
+      repeating-linear-gradient(90deg, var(--craft-line) 0 1px, transparent 1px 6vw);
+    opacity: .5;
+    animation: ny-rain 16s linear infinite;
+  }
+}
+@keyframes ny-rain { to { background-position: 0 21vw, 0 13.5vw, 0 0, 0 0; } }

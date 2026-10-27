@@ -55,6 +55,31 @@ body {
 
 .slide[data-active] { display: block; }
 
+/* In the show, a move to another slide crossfades, like a projector slide
+   change: every page stays laid out in one grid cell, the new one fades in
+   over the one it replaces. deck.js marks such a move with data-change;
+   a reveal step, the first frame and a return from the overview cut.
+   Motion off and print cut as well. */
+@media screen {
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide {
+    display: block;
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) .slide[data-active] {
+    z-index: 1;
+    opacity: 1;
+    visibility: visible;
+  }
+  .deck[data-change="slide"]:not([data-mode="grid"], [data-mode="strip"]) .slide {
+    transition: opacity var(--slide-fade, 600ms) ease, visibility 0s linear var(--slide-fade, 600ms);
+  }
+  .deck[data-change="slide"]:not([data-mode="grid"], [data-mode="strip"]) .slide[data-active] {
+    transition: opacity var(--slide-fade, 600ms) ease, visibility 0s;
+  }
+}
+
 /* Print needs a separate container. The screen stage stays 16:9, while
    on paper the canvas gets the real sheet proportions and recomputes
    every cqw/cqh like a regular web page. */

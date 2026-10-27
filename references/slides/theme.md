@@ -18,13 +18,13 @@ Open two or three samples close to the occasion: `README.md`, `theme.css` and `o
 2. Roles. Set the `--craft-*` roles on `:root, :root[data-theme="light"]`: surfaces, text, lines, the four accent roles, data series and fonts. One mode is enough, so both selectors get the same values.
 3. Cover. The cover is the poster of the theme. Replace the stock red fill and diagonal lanes on `.s-cover`.
 4. One signature. One element carries the identity: a brand face on the hero line, a gradient title, a sheet number. Everything else stays plain.
-5. Decor. Put it in `.slide::before` and `.slide::after` with `z-index: -1` and `pointer-events: none`: a grid, stars, snow, an ornament frame, a garland.
+5. Decor. A static frame or garland goes in `.slide::before` or `::after` with `z-index: -1`. Anything that moves goes on `body::before` in `@media screen`, with transparent slides; a slide change never restarts it.
 6. Optional emoji rain for the holiday. Draw the emoji inside an SVG data URI tile and move it with `background-position` in a pseudo-element. Emoji as DOM text count as content. Text itself never moves: reveal steps simply appear.
 
 Rules:
 
 - Decor is paint, never text. Emoji snowflakes or extra DOM nodes with characters count as text, and the checks report them as overlapping content.
-- Animate decor freely. The deck stops all motion on `M` and for a static run. Do not write `prefers-reduced-motion`: the check rejects it.
+- The deck stops all motion on `M`. Do not write `prefers-reduced-motion`: the check rejects it.
 - A brand or display face is for the hero line only. Body text uses a readable face with Cyrillic.
 - Accent text needs contrast 4.5 against the background. Gold or yellow on light paper fails, so use it for marks and frames.
 - Raw colors are allowed in `deck-theme.css`. The shared theme stays untouched.

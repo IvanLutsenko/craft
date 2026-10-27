@@ -2068,7 +2068,8 @@
     "--scroll-duration",
     "--span",
     "--wipe",
-    "--past"
+    "--past",
+    "--slide-fade"
   ],
   "requirements": {
     "fontFiles": 4,

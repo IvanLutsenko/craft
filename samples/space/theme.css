@@ -43,38 +43,43 @@
 .s-cover .type-hero,
 .s-title-card .type-hero { letter-spacing: .02em; }
 
-/* Decor layer: two star fields drifting at different speeds give depth.
-   base.css stops them on M. */
-.slide::before,
-.slide::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-.slide::before {
-  background:
-    radial-gradient(.15cqw .15cqw at 4% 12%, var(--craft-text), transparent),
-    radial-gradient(.1cqw .1cqw at 18% 64%, var(--craft-text-body), transparent),
-    radial-gradient(.2cqw .2cqw at 33% 28%, var(--craft-text), transparent),
-    radial-gradient(.1cqw .1cqw at 52% 84%, var(--craft-text-body), transparent),
-    radial-gradient(.15cqw .15cqw at 71% 18%, var(--craft-text), transparent),
-    radial-gradient(.1cqw .1cqw at 88% 56%, var(--craft-text-body), transparent);
-  animation: space-twinkle 5s ease-in-out infinite alternate;
-}
-.slide::after {
-  background:
-    radial-gradient(.1cqw .1cqw at 9% 40%, var(--craft-data-blue), transparent),
-    radial-gradient(.1cqw .1cqw at 27% 90%, var(--craft-text-body), transparent),
-    radial-gradient(.15cqw .15cqw at 61% 46%, var(--craft-data-blue), transparent),
-    radial-gradient(.1cqw .1cqw at 94% 8%, var(--craft-text-body), transparent),
-    radial-gradient(18cqw 18cqw at 96% 104%, var(--craft-surface), transparent 70%);
-  opacity: .7;
-  animation: space-twinkle 7s ease-in-out infinite alternate-reverse;
-}
-@keyframes space-twinkle { from { opacity: .35; } to { opacity: 1; } }
-
 /* The cover is the poster: open space instead of the stock red fill. */
 .s-cover.surface-accent { background: var(--bg); }
 .s-cover .lanes { display: none; }
+
+/* Animated decor lives on one deck-wide layer under every slide, so a
+   slide change never restarts it. Slides are transparent in the show and
+   keep their paper in the overview and in print. base.css stops the motion on M. */
+@media screen {
+  body { background: var(--craft-bg); }
+  .deck { position: relative; z-index: 1; }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) :is(.slide:not(.surface-accent), .s-cover.surface-accent) { background: transparent; }
+  /* Two star fields twinkling out of phase give depth. */
+  body::before, body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+  body::before {
+    background:
+      radial-gradient(.15vw .15vw at 4% 12%, var(--craft-text), transparent),
+      radial-gradient(.1vw .1vw at 18% 64%, var(--craft-text-body), transparent),
+      radial-gradient(.2vw .2vw at 33% 28%, var(--craft-text), transparent),
+      radial-gradient(.1vw .1vw at 52% 84%, var(--craft-text-body), transparent),
+      radial-gradient(.15vw .15vw at 71% 18%, var(--craft-text), transparent),
+      radial-gradient(.1vw .1vw at 88% 56%, var(--craft-text-body), transparent);
+    animation: space-twinkle 5s ease-in-out infinite alternate;
+  }
+  body::after {
+    background:
+      radial-gradient(.1vw .1vw at 9% 40%, var(--craft-data-blue), transparent),
+      radial-gradient(.1vw .1vw at 27% 90%, var(--craft-text-body), transparent),
+      radial-gradient(.15vw .15vw at 61% 46%, var(--craft-data-blue), transparent),
+      radial-gradient(.1vw .1vw at 94% 8%, var(--craft-text-body), transparent),
+      radial-gradient(18vw 18vw at 96% 104%, var(--craft-surface), transparent 70%);
+    opacity: .7;
+    animation: space-twinkle 7s ease-in-out infinite alternate-reverse;
+  }
+}
+@keyframes space-twinkle { from { opacity: .35; } to { opacity: 1; } }

@@ -68,19 +68,26 @@
   --meander-row: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 20'%3E%3Crect width='48' height='20' fill='%238B1A2B'/%3E%3Cpath d='M0,10 C4,10 4,3 12,3 C20,3 20,10 24,10 C28,10 28,17 36,17 C44,17 44,10 48,10' fill='none' stroke='%23DAA520' stroke-width='2'/%3E%3C/svg%3E");
 }
 
-/* Optional holiday decor: a slow rain of petals, buuz and sparkles.
-   The emoji are drawn inside SVG tiles, so they are paint, not text, and
-   they stop with the rest of the motion on M. */
-.slide::after {
-  content: "";
-  position: absolute;
-  inset: 1.3cqw;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='26'>%F0%9F%8C%B8</text><text x='130' y='150' font-size='20'>%E2%9C%A8</text><text x='70' y='250' font-size='24'>%F0%9F%A5%9F</text></svg>") 0 0 / 14cqw 21cqw,
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='110' y='60' font-size='18'>%F0%9F%8C%B8</text><text x='30' y='190' font-size='14'>%E2%9C%A8</text></svg>") 0 0 / 9cqw 13.5cqw;
-  opacity: .35;
-  animation: ts-rain 18s linear infinite;
+/* Animated decor lives on one deck-wide layer under every slide, so a
+   slide change never restarts it. Slides are transparent in the show and
+   keep their paper in the overview and in print. base.css stops the motion on M. */
+@media screen {
+  body { background: var(--craft-bg); }
+  .deck { position: relative; z-index: 1; }
+  .deck:not([data-mode="grid"], [data-mode="strip"]) :is(.slide:not(.surface-accent), .s-cover.surface-accent) { background: transparent; }
+  /* Optional holiday decor: a slow rain of petals, buuz and sparkles,
+     drawn inside SVG tiles, so it is paint, not text. The ornament frame
+     stays on the slide: it does not move. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='300'><text x='20' y='40' font-size='26'>%F0%9F%8C%B8</text><text x='130' y='150' font-size='20'>%E2%9C%A8</text><text x='70' y='250' font-size='24'>%F0%9F%A5%9F</text></svg>") 0 0 / 14vw 21vw,
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='240'><text x='110' y='60' font-size='18'>%F0%9F%8C%B8</text><text x='30' y='190' font-size='14'>%E2%9C%A8</text></svg>") 0 0 / 9vw 13.5vw;
+    opacity: .35;
+    animation: ts-rain 18s linear infinite;
+  }
 }
-@keyframes ts-rain { to { background-position: 0 21cqw, 0 13.5cqw; } }
+@keyframes ts-rain { to { background-position: 0 21vw, 0 13.5vw; } }
