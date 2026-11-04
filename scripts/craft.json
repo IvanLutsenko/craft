@@ -860,8 +860,8 @@
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 72,
-      "catalogPrintPages": 72,
+      "catalogPages": 75,
+      "catalogPrintPages": 75,
       "catalogLayouts": [
         "title",
         "cover",
@@ -2021,6 +2021,14 @@
           "variable": "Change the direction, branching and nodes to match the real links. Neutral nodes are the default; the accent is not tied to the center"
         },
         {
+          "id": "flow-branch",
+          "name": "Fork and join",
+          "layout": "flow",
+          "job": "A step splits into two parallel nodes that meet again at the next step",
+          "useWhen": "Use when the process runs two branches side by side and joins them",
+          "variable": "Change the nodes; keep two branch nodes of one kind"
+        },
+        {
           "id": "visual-comparison",
           "name": "Image comparison",
           "layout": "visual-comparison",
@@ -2188,7 +2196,7 @@
   "readingRoutes": {
     "limits": {
       "fileChars": 6500,
-      "routeChars": 33000
+      "routeChars": 34000
     },
     "routes": {
       "interface-dashboard": [

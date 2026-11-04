@@ -108,6 +108,7 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("text clipped by container",
      STATEMENT.format(key="clip", body='<div style="height:4cqh;overflow:hidden"><h2 class="type-hero">A long statement that does not fit the given height</h2></div>'),
      "", "", "text clipped by container"),
+    ("block in the decor band", LIST, ".slide { --decor-top: 20cqh; }", "", "edge band"),
     ("reveal shifts shown content", LIST, ".frag:not([data-shown]) { display: none; } .pad:has(> .slide-title) { justify-content: center; }", "", "reveal shifts content already shown"),
     ("animation with a final frame reaches the end in static mode",
      STATEMENT.format(key="late", body='<h2 class="type-hero late">Statement</h2>'),
@@ -194,6 +195,7 @@ def build(root: Path, name: str, slides: str, css: str = "", js: str = "") -> Pa
 # checks run every time. The good deck runs every pass.
 CASE_PASSES = {
     "text clipped by container": "frames",
+    "block in the decor band": "frames",
     "reveal shifts shown content": "frames",
     "animation with a final frame reaches the end in static mode": "frames,motion",
     "content appears only with motion": "frames",
@@ -260,6 +262,13 @@ def main() -> None:
         empty = subprocess.run([node(), str(PROBE), str(index), "--passes", "frames", "--only", ""], cwd=ROOT, text=True, capture_output=True, timeout=600)
         assert empty.returncode != 0 or "--only needs slide keys" in empty.stdout, "an empty --only walked nothing and passed"
         print("✓ --only walks only the named slides")
+        # A one-line list leaves most of the slide empty; a filled figure does not.
+        thin = '<section class="slide" data-slide-layout="list" data-key="thin"><div class="pad"><p class="slide-title">Thin</p><ul class="bullets"><li>One point</li></ul></div><p class="slide-number"></p></section>'
+        full = '<section class="slide s-figure" data-slide-layout="figure" data-key="full"><div class="pad"><p class="slide-title">Full</p><div class="frame place-fill"><div class="placeholder">image</div></div></div><p class="slide-number"></p></section>'
+        report = probe(build(root, "space", thin + full), "frames")
+        spaced = {item["key"] for item in report["warnings"] if item["kind"] == "space"}
+        assert spaced == {"thin"}, f"empty-space warning went to {spaced or 'no slide'}, expected only the thin list"
+        print("✓ empty space under the title is reported")
         with ThreadPoolExecutor(max_workers=4) as pool:
             for name in pool.map(lambda case: run_case(root, case), CASES):
                 print(f"✓ {name}")

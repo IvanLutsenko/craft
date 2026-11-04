@@ -24,6 +24,7 @@ Open two or three samples close to the occasion: `README.md`, `theme.css` and `o
 
 Rules:
 
+- The occasion is a light accent: the cover, one signature, decor, a reference or two in the text. Do not rewrite the content, examples and terms into the theme's lore.
 - Decor is paint, never text. Emoji snowflakes or extra DOM nodes with characters count as text, and the checks report them as overlapping content.
 - The deck stops all motion on `M`. Do not write `prefers-reduced-motion`: the check rejects it.
 - A brand or display face is for the hero line only. Body text uses a readable face with Cyrillic.

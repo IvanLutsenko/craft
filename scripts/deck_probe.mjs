@@ -316,7 +316,44 @@ const PAGE_LIB = String.raw`(() => {
         .find((el) => el !== title && el.getBoundingClientRect().height > 0);
       // The margin box counts: a key row keeps its own gap to the title on purpose.
       if (first) result.service.content = Math.round(first.getBoundingClientRect().top - Number.parseFloat(getComputedStyle(first).marginTop) - bounds.top);
+      // How much of the area under the title the content fills: text lines
+      // and pictures, not the boxes around them, which stretch to the width.
+      const pad = title.parentElement;
+      if (first && pad?.matches('.pad')) {
+        const box = pad.getBoundingClientRect();
+        const style = getComputedStyle(pad);
+        const area = {
+          top: first.getBoundingClientRect().top - Number.parseFloat(getComputedStyle(first).marginTop),
+          bottom: box.bottom - Number.parseFloat(style.paddingBottom),
+          left: box.left + Number.parseFloat(style.paddingLeft),
+          right: box.right - Number.parseFloat(style.paddingRight),
+        };
+        const ink = [...texts.filter(({ parent }) => pad.contains(parent) && !title.contains(parent)).map(({ rect }) => rect),
+          ...[...pad.querySelectorAll('img, svg, video, canvas, .placeholder, .qr, .flow-node, .code-window')].filter((el) => !title.contains(el)).map((el) => el.getBoundingClientRect())]
+          .filter((rect) => rect.width > 0 && rect.height > 0);
+        if (ink.length && area.bottom > area.top && area.right > area.left) {
+          const bottom = Math.max(...ink.map((rect) => rect.bottom));
+          const right = Math.max(...ink.map((rect) => rect.right));
+          result.fill = [(right - area.left) / (area.right - area.left), (bottom - area.top) / (area.bottom - area.top)].map((value) => Math.round(Math.min(1, value) * 100));
+        }
+      }
     }
+    // A theme marks its edge bands with --decor-top and --decor-bottom on the
+    // slide: perforation, a ribbon, a garland. Blocks of content stay off them.
+    const band = (name) => {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;height:var(' + name + ', 0px)';
+      canvasOf(slide).append(probe);
+      const height = probe.getBoundingClientRect().height;
+      probe.remove();
+      return height;
+    };
+    const decorTop = band('--decor-top'), decorBottom = band('--decor-bottom');
+    result.band = decorTop || decorBottom ? [...slide.querySelectorAll('.pad *')].filter((el) => {
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height || el.closest('.slide-status')) return false;
+      return (decorTop && rect.top < bounds.top + decorTop - 0.5) || (decorBottom && rect.bottom > bounds.bottom - decorBottom + 0.5);
+    }).filter((el, i, all) => !all.some((other) => other !== el && other.contains(el))).map(describe).slice(0, 3) : [];
     return result;
   }
 
@@ -623,6 +660,12 @@ try {
       result.overflow.forEach((item) => error('overflow', at, `text runs off the slide: ${item}`));
       result.number.forEach((item) => error('service', at, `text runs into the slide number: ${item}`));
       result.overlap.forEach((item) => error('overlap', at, `texts overlap: ${item}`));
+      result.band.forEach((item) => error('band', at, `a block runs into the theme's edge band (--decor-top/--decor-bottom): ${item}`));
+      if (result.fill && at.step === at.steps) {
+        const [width, height] = result.fill;
+        if (height < 40) warn('space', at, `content fills ${height}% of the height under the title: make it larger, add the picture, or merge the slide with a neighbour`);
+        else if (width < 45) warn('space', at, `content takes the left ${width}% of the width and leaves the rest empty: widen it or put something on the right`);
+      }
       if (result.frag.length) error('reveal', at, `reveals ${result.frag.join(', ')} do not match step ${at.step}`);
       if (result.bentoRows) error('layout', at, 'bento tiles in one row have different heights');
       result.invisible.forEach((item) => error('static', at, `content is invisible in the static frame: ${item}. An animation must set only the starting frame (from), not the final state`));

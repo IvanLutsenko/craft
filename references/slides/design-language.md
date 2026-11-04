@@ -60,4 +60,6 @@ Reuse the roles. Do not invent a new font size and caption style for each layout
 | `.iterations` | The current `.iteration.is-current` large, earlier `.iteration` items beside it |
 | `.shot--scroll` | A fixed `.shot-head` and a scrolling `.shot-body` |
 
-`.flow-node--accent` gives a permanent fill, not a moving focus. The conditions for accents and reveals are in the [selection rules](selection.md). Do not assign them because an example looks that way.
+Two parallel nodes that meet again go in one `.flow-step` as `.flow-branch` with two `.flow-node`. `.flow-node--accent` gives a permanent fill, not a moving focus. The conditions for accents and reveals are in the [selection rules](selection.md). Do not assign them because an example looks that way.
+
+Emphasis is the colour of a word and nothing else: no highlighter marker, no white plate behind text, a table or a note, no badge made up for one slide. Records go in the `table` layout, not in a grid of tiles.

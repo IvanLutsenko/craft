@@ -42,4 +42,4 @@ Automation does not check meaning. Also check:
 | Slides | Screenshots of every frame against the plan; the basis for comparisons, arrows and accents; motion on a real phone if the deck has video |
 | Both formats | Readability and contrast; red without a function |
 
-After a text edit, look at `--shots` of the touched slides. Keep screenshots, PDFs and exact commands. Name any check you could not run. An agent's own report and a green validator do not replace looking at the content.
+After a text edit, look at `--shots` of the touched slides; review a montage of the whole deck once per round, not after every edit. Keep screenshots, PDFs and exact commands. Name any check you could not run. An agent's own report and a green validator do not replace looking at the content.
