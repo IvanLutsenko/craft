@@ -654,6 +654,7 @@
         "chart",
         "table",
         "code",
+        "pair",
         "flow",
         "end",
         "bento",
@@ -776,6 +777,20 @@
           ]
         },
         {
+          "id": "pair",
+          "path": "assets/slides/fragments/pair.html",
+          "purpose": "The same thing in two windows side by side: a bot reply and a human one, old and new config",
+          "placeholders": {
+            "SLIDE_TITLE": "text",
+            "LEFT_LABEL": "text",
+            "LEFT_CONTENT": "html",
+            "RIGHT_LABEL": "text",
+            "RIGHT_CONTENT": "html",
+            "FINDING": "text"
+          },
+          "dependencies": []
+        },
+        {
           "id": "flow",
           "path": "assets/slides/fragments/flow.html",
           "purpose": "Handoff, dependency or transformation between nodes",
@@ -845,8 +860,8 @@
       ],
       "fragmentTarget": ".slides",
       "catalog": "catalog/slides/index.html",
-      "catalogPages": 69,
-      "catalogPrintPages": 69,
+      "catalogPages": 72,
+      "catalogPrintPages": 72,
       "catalogLayouts": [
         "title",
         "cover",
@@ -858,6 +873,7 @@
         "quote",
         "metrics",
         "code",
+        "pair",
         "figure",
         "screenshot",
         "table",
@@ -1264,6 +1280,47 @@
           },
           "signature": [
             ".code"
+          ]
+        },
+        "pair": {
+          "job": "Put one thing in two versions side by side so the audience sees the difference",
+          "useWhen": [
+            "the same finding, message or config exists in two versions",
+            "the difference is in the wording or the shape, and both versions are short enough to read"
+          ],
+          "avoidWhen": [
+            "the two sides are different topics; use list or table",
+            "the difference is a number; use comparison or chart",
+            "the difference is in the picture; use visual-comparison"
+          ],
+          "variable": [
+            "window labels with the source and a size, such as a character count",
+            "window body: .window-text for prose, pre.code for code",
+            "one finding under the pair"
+          ],
+          "fixed": [
+            "two windows of equal width, the before on the left",
+            "the right window appears on the next click",
+            "both windows hold real text, not a summary of it"
+          ],
+          "slots": {
+            "SLIDE_TITLE": "What the two versions show",
+            "LEFT_LABEL": "Where the first version comes from, with a size if it matters",
+            "LEFT_CONTENT": "<div class=\"window-text\"> with paragraphs, or <pre class=\"code\">",
+            "RIGHT_LABEL": "Where the second version comes from",
+            "RIGHT_CONTENT": "Same kind of body as the left one",
+            "FINDING": "What the difference means"
+          },
+          "reveal": {
+            "default": "optional",
+            "guidance": "The left window shows on entry, the right one on the next click, the finding last."
+          },
+          "alternatives": {
+            "comparison": "for two states measured by the same number",
+            "code": "for one snippet with focus lines"
+          },
+          "signature": [
+            ".code-windows--pair"
           ]
         },
         "figure": {
@@ -1852,6 +1909,14 @@
           "variable": "Change the language, context and focus lines"
         },
         {
+          "id": "pair",
+          "name": "Pair",
+          "layout": "pair",
+          "job": "One finding in two versions, the second revealed on click",
+          "useWhen": "Use when the same text or config exists in two versions",
+          "variable": "Change the window labels, the bodies and the finding"
+        },
+        {
           "id": "figure",
           "name": "Media with a note",
           "layout": "figure",
@@ -2069,7 +2134,8 @@
     "--span",
     "--wipe",
     "--past",
-    "--slide-fade"
+    "--slide-fade",
+    "--count-wait"
   ],
   "requirements": {
     "fontFiles": 4,
@@ -2122,7 +2188,7 @@
   "readingRoutes": {
     "limits": {
       "fileChars": 6500,
-      "routeChars": 32000
+      "routeChars": 33000
     },
     "routes": {
       "interface-dashboard": [

@@ -46,6 +46,8 @@ One `.frag` wrapper holds the parts of one frame: an arrow with its node, a capt
 
 Shown content stays in place. Mark an intended layout change between steps with `data-shift="intended"`.
 
+`.deck[data-reveal-items="each"]` (the scaffold default) reveals rows of `.bullets`, `.steps` and `.code-windows` one per click. A container with its own `.frag` keeps your plan; `data-reveal-items="whole"` shows a slide or container at once. `deck.js` keeps `/commands` and `kebab-names` unbroken with `.nowrap`.
+
 ## Controls and accessibility
 
 Arrow keys and space change pages. `G` toggles the grid, `L` the strip, `F` full screen, `T` the theme, `M` motion, `H` the control panel. The browser remembers the theme.

@@ -305,6 +305,12 @@ const PAGE_LIB = String.raw`(() => {
       const centered = Math.abs((rect.left + rect.right) / 2 - (bounds.left + bounds.right) / 2) < 2;
       const x = centered ? 'center' : Math.round(rect.left - bounds.left);
       result.service.title = [x, Math.round(rect.top - bounds.top), getComputedStyle(title).fontSize];
+      // Where the content under the title starts: the eye looks for it in the
+      // same place on every slide.
+      const first = [...(title.parentElement?.matches('.pad') ? title.parentElement.children : [])]
+        .find((el) => el !== title && el.getBoundingClientRect().height > 0);
+      // The margin box counts: a key row keeps its own gap to the title on purpose.
+      if (first) result.service.content = Math.round(first.getBoundingClientRect().top - Number.parseFloat(getComputedStyle(first).marginTop) - bounds.top);
     }
     return result;
   }
@@ -358,6 +364,11 @@ const PAGE_LIB = String.raw`(() => {
         number: Boolean(slide.querySelector('.slide-number')),
         bentoSteps: slide.querySelectorAll('.bento .frag, .bento.frag').length,
         posterless: [...slide.querySelectorAll('video')].filter((video) => !video.getAttribute('poster')).length,
+        // How the item containers reveal: one by one or as a whole. A slide or
+        // container with data-reveal-items="whole" declares it and is not compared.
+        itemReveal: slide.dataset.revealItems === 'whole' ? [] : [...slide.querySelectorAll('.bullets, .steps, .code-windows')]
+          .filter((list) => list.dataset.revealItems !== 'whole' && !list.closest('.frag'))
+          .map((list) => (list.querySelector('.frag') ? 'by click' : 'at once')),
         matches: (selectors) => selectors,
       };
     });
@@ -575,8 +586,24 @@ try {
     }
   }
 
+  // Slides of one layout reveal their items the same way.
+  const revealByLayout = new Map();
+  for (const source of sources) {
+    for (const mode of new Set(source.itemReveal)) {
+      const key = `${source.layout}|${mode}`;
+      revealByLayout.set(key, [...(revealByLayout.get(key) || []), source.page]);
+    }
+  }
+  for (const [key, pages] of revealByLayout) {
+    const [layout, mode] = key.split('|');
+    const other = revealByLayout.get(`${layout}|${mode === 'by click' ? 'at once' : 'by click'}`);
+    if (other && (pages.length < other.length || (pages.length === other.length && mode === 'at once'))) {
+      warn('reveal', where(pages[0]), `items show ${mode} on pages ${pages.slice(0, 6).join(', ')}, other ${layout} slides reveal them ${mode === 'by click' ? 'at once' : 'by click'}: reveal one kind of slide one way, or mark the exception data-reveal-items="whole"`);
+    }
+  }
+
   await pass('frames', async () => {
-    const service = { number: new Map(), title: new Map() };
+    const service = { number: new Map(), title: new Map(), content: new Map() };
     let previousGeometry = null;
     if (shots) await mkdir(shots, { recursive: true });
     for (let n = 1; n <= total; n += 1) {
@@ -615,6 +642,9 @@ try {
       if (result.service.title && !sources.find((source) => source.key === at.key)?.local) {
         const signature = `${at.layout}|${result.service.title.join('|')}`;
         service.title.set(signature, [...(service.title.get(signature) || []), n]);
+        if (result.service.content !== undefined && at.step === at.steps) {
+          service.content.set(result.service.content, [...(service.content.get(result.service.content) || []), n]);
+        }
       }
 
       const geometry = await page.evaluate('__probe.geometry()');
@@ -650,6 +680,16 @@ try {
       if (shots) {
         const shot = await page.send('Page.captureScreenshot', { format: 'png' });
         await writeFile(path.join(shots, `dark-${String(n).padStart(3, '0')}.png`), Buffer.from(shot.data, 'base64'));
+      }
+    }
+
+    // Content under a title starts on one line across all layouts. A pixel
+    // of rounding is the same line.
+    const starts = [...service.content].sort((a, b) => b[1].length - a[1].length);
+    if (starts.length > 1) {
+      const [line] = starts[0];
+      for (const [top, pages] of starts.slice(1)) {
+        if (Math.abs(top - line) > 1) error('rhythm', where(pages[0]), `content under the title starts at ${top}px, on most slides at ${line}px (pages ${pages.slice(0, 6).join(', ')}): do not move it locally, or mark the slide data-composition="local" with a reason`);
       }
     }
 

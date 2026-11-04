@@ -32,7 +32,7 @@ python3 scripts/check_project.py <target-folder>          # while editing
 python3 scripts/check_project.py <target-folder> --full   # before handoff
 ```
 
-You need Chromium (`CHROMIUM`) and Node.js. `--static-only` checks sources without a browser. The default renders three widths in both themes, and every deck state in its final frame and on a phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, the light theme and deep links. `--shots` saves every page.
+You need Chromium (`CHROMIUM`) and Node.js. `--static-only` checks sources without a browser. The default renders three widths in both themes, and every deck state in its final frame and on a phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, the light theme and deep links. `--shots` saves every page. `.deck[data-target="desktop"]` (the scaffold default) is checked at desktop width only.
 
 Automation does not check meaning. Also check:
 
@@ -42,4 +42,4 @@ Automation does not check meaning. Also check:
 | Slides | Screenshots of every frame against the plan; the basis for comparisons, arrows and accents; motion on a real phone if the deck has video |
 | Both formats | Readability and contrast; red without a function |
 
-Keep screenshots, PDFs and exact commands. Name any check you could not run. An agent's own report and a green validator do not replace looking at the content.
+After a text edit, look at `--shots` of the touched slides. Keep screenshots, PDFs and exact commands. Name any check you could not run. An agent's own report and a green validator do not replace looking at the content.

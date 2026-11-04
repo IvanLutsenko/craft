@@ -177,6 +177,9 @@ def check_static(index: Path, resource_root: Path | None = None) -> str:
     if parser.slides:
         check_qr_color(index.read_text(encoding="utf-8"))
         check_slide_sources(root, index, project_files)
+        favicon = root / "favicon.svg"
+        if favicon.is_file() and favicon.read_bytes() == (ROOT / "assets/shared/favicon-slides.svg").read_bytes():
+            print("! favicon.svg is the Craft default: draw one in the deck's theme (references/slides/theme.md)")
     return "interface" if parser.interface else "slides"
 
 
@@ -246,10 +249,18 @@ DECK_PASSES = {
 }
 
 
+def deck_viewports(index: Path) -> tuple[tuple[int, int], ...]:
+    """A deck marked data-target="desktop" is shown from a computer: no phone widths."""
+    desktop = re.search(r'<div\b(?=[^>]*\bclass="(?:[^"]*\s)?deck(?:\s[^"]*)?")(?=[^>]*\bdata-target="desktop")', index.read_text(encoding="utf-8"))
+    return VIEWPORTS[:1] if desktop else VIEWPORTS
+
+
 def check_deck(index: Path, level: str = "full", shots: Path | None = None) -> dict:
     """Walks deck states in one Chromium session; the level picks the passes."""
-    command: list[str | Path] = [node(), ROOT / "scripts/deck_probe.mjs", index, "--passes", DECK_PASSES[level]]
-    command += ["--viewports", ",".join(f"{width}x{height}" for width, height in VIEWPORTS)]
+    viewports = deck_viewports(index)
+    passes = DECK_PASSES[level] if len(viewports) > 1 else DECK_PASSES[level].replace(",phone", "")
+    command: list[str | Path] = [node(), ROOT / "scripts/deck_probe.mjs", index, "--passes", passes]
+    command += ["--viewports", ",".join(f"{width}x{height}" for width, height in viewports)]
     if shots:
         command += ["--shots", shots]
     report = json.loads(run(*command).stdout)
@@ -302,7 +313,8 @@ def run_checks(args: argparse.Namespace) -> None:
         report = check_deck(index, level, args.shots)
         if args.report:
             args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print("✓ Chromium: 1440, 390 and 320 px, theme and accessibility")
+        widths = ", ".join(str(width) for width, _ in deck_viewports(index))
+        print(f"✓ Chromium: {widths} px, theme and accessibility")
         line = f"✓ deck states: {len(report['pages'])} pages, {report['sources']} slides"
         if report["pdf"]:
             line += f", PDF {report['pdf']['steps']} and {report['pdf']['final']} pages"

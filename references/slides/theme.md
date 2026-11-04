@@ -19,7 +19,8 @@ Open two or three samples close to the occasion: `README.md`, `theme.css` and `o
 3. Cover. The cover is the poster of the theme. Replace the stock red fill and diagonal lanes on `.s-cover`.
 4. One signature. One element carries the identity: a brand face on the hero line, a gradient title, a sheet number. Everything else stays plain.
 5. Decor. A static frame goes in `.slide::before` or `::after` with `z-index: -1`. Anything that moves goes on `body::before` in `@media screen`; the slide becomes a panel over it: a `--stage-pad` gutter, 95% paper, a frame. Text never sits on bare decor.
-6. Optional emoji rain for the holiday. Draw the emoji in an SVG data URI tile, moved with `background-position`. Emoji as DOM text count as content. Text itself never moves: reveal steps simply appear.
+6. Favicon: an SVG motif of the occasion in the theme's palette; the check warns about the default.
+7. Optional emoji rain for the holiday. Draw the emoji in an SVG data URI tile, moved with `background-position`. Emoji as DOM text count as content. Text itself never moves: reveal steps simply appear.
 
 Rules:
 

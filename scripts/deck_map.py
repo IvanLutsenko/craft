@@ -29,6 +29,11 @@ class DeckParser(HTMLParser):
         self.current: dict | None = None
         self.title_depth: int | None = None
         self.in_slides = 0
+        # deck.js reveals list rows, steps and code windows one per click on
+        # a deck with data-reveal-items="each", unless the container has its own .frag.
+        self.reveal_each = False
+        self.frag_depths: list[int] = []
+        self.containers: list[dict] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
@@ -36,12 +41,15 @@ class DeckParser(HTMLParser):
         if tag in {"br", "img", "source", "meta", "link", "input", "hr", "wbr", "col", "area", "track", "embed"}:
             return
         self.depth += 1
+        if "deck" in classes and values.get("data-reveal-items") == "each":
+            self.reveal_each = True
         if self.current is None and tag == "section" and "slide" in classes:
             self.current = {
                 "key": values.get("data-key"),
                 "layout": values.get("data-slide-layout"),
                 "status": values.get("data-status"),
                 "local": values.get("data-composition") == "local",
+                "whole": values.get("data-reveal-items") == "whole",
                 "frags": 0,
                 "title": "",
                 "depth": self.depth,
@@ -49,12 +57,34 @@ class DeckParser(HTMLParser):
             return
         if self.current is None:
             return
-        if "frag" in classes and (not self.current["frags"] or values.get("data-frag") != "with-previous"):
-            self.current["frags"] += 1
+        if self.containers and self.containers[-1]["depth"] == self.depth - 1:
+            self.containers[-1]["children"] += 1
+        if "frag" in classes:
+            for container in self.containers:
+                container["frag"] = True
+            if not self.current["frags"] or values.get("data-frag") not in {"with-previous", "after-count"}:
+                self.current["frags"] += 1
+            self.frag_depths.append(self.depth)
+        if self.reveal_each and {"bullets", "steps", "code-windows"} & set(classes):
+            self.containers.append({
+                "depth": self.depth, "children": 0, "frag": False, "inner": 0,
+                "auto": not self.current["whole"] and values.get("data-reveal-items") != "whole" and not self.frag_depths,
+            })
         if not self.current["title"] and self.title_depth is None and (tag in {"h1", "h2", "h3"} or "slide-title" in classes):
             self.title_depth = self.depth
 
     def handle_endtag(self, tag: str) -> None:
+        if self.frag_depths and self.frag_depths[-1] == self.depth:
+            self.frag_depths.pop()
+        if self.containers and self.containers[-1]["depth"] == self.depth:
+            container = self.containers.pop()
+            if container["auto"] and not container["frag"]:
+                # deck.js reveals the outer rows first, so a nested container
+                # ends up inside a .frag and adds nothing of its own.
+                added = container["children"] - container["inner"]
+                self.current["frags"] += added
+                if self.containers:
+                    self.containers[-1]["inner"] += container["children"]
         if self.current is not None and self.title_depth == self.depth:
             self.title_depth = None
             self.current["title"] = re.sub(r"\s+", " ", self.current["title"]).strip() or " "

@@ -90,6 +90,11 @@
   --rule: max(1px, round(down, .0625cqw, 1px));
   --rule-strong: max(1px, round(down, .1875cqw, 1px));
 }
+/* Under a slide title the content starts on the same line on every slide.
+   Centred by its own height, it jumps between slides and the eye hunts
+   for it. Layouts that fill the height set their own padding below. */
+.pad:has(> .slide-title) { justify-content: flex-start; padding-top: calc(var(--pad-y) + 10cqh); }
+.pad:has(> .slide-title) > :is(.steps, .scoreboard) { flex: 0 0 auto; align-content: start; }
 
 /* ============================================================
    BUILDING BLOCKS
@@ -240,10 +245,6 @@
      differ in width. A fixed box keeps the number from moving between steps. */
   min-width: 4em; text-align: right;
 }
-.slide-number span {
-  font: 500 .5em/1 var(--font-text); letter-spacing: .04em;
-  opacity: .72; margin-left: .4em;
-}
 
 /* --- typography --- */
 .type-hero {
@@ -256,7 +257,10 @@
 }
 .type-heading { font: 600 2.1cqw/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
 .type-lede { font: 400 2.35cqw/1.46 var(--font-text); margin: 0; max-width: 36ch; }
-.type-note { font: 400 1.6cqw/1.5 var(--font-text); margin: 0; color: var(--muted); }
+/* The note under a list, table or code is the takeaway: it reads in the accent. */
+.type-note { font: 400 1.6cqw/1.5 var(--font-text); margin: 0; color: var(--accent); }
+/* A command or kebab-case name never breaks at its hyphen; deck.js wraps them. */
+.nowrap { white-space: nowrap; }
 .type-metric, .comparison-value {
   font: 700 var(--metric-size, 6.6cqw)/1 var(--font-display);
   letter-spacing: -.04em;
@@ -273,8 +277,6 @@
 .slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number { color: var(--on-accent); }
 .surface-accent .slide-number,
 .slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number { opacity: 1; }
-.surface-accent .slide-number span,
-.slide:has(.comparison-side.is-after:not(.frag:not([data-shown]))) .slide-number span { opacity: 1; color: var(--on-accent-muted); }
 /* Short label inside a block: a timestamp, a comparison side, a chart
    category, a note on a metric. One role, one font size. */
 .timeline-key, .comparison-label, .scoreboard .k,
@@ -415,6 +417,35 @@
 .code:has(.code-line.is-highlighted) .code-line:not(.is-highlighted) {
   opacity: .18;
 }
+
+/* Code window: a title bar with three dots over sunken code, like a
+   terminal screenshot. A long line wraps under itself instead of being
+   cut off. .code-windows stacks windows; --pair puts two side by side. */
+.code-windows { display: grid; gap: 3cqh; }
+.code-windows--pair { grid-template-columns: 1fr 1fr; gap: 2cqw; align-items: start; }
+.code-window {
+  margin: 0; overflow: hidden;
+  border-radius: 1.2cqw;
+  background: var(--surface-sunken);
+  box-shadow: 0 0 0 1px var(--line), 0 2cqh 5cqh var(--craft-window-shadow);
+}
+.code-window-bar {
+  display: flex; align-items: center; gap: .7cqw;
+  padding: 1.4cqh 1.4cqw;
+  background: var(--surface);
+  color: var(--muted);
+  font: 500 1.5cqw/1 var(--font-text);
+}
+.code-window-bar i { width: .9cqw; aspect-ratio: 1; border-radius: 50%; background: var(--craft-window-close); }
+.code-window-bar i:nth-child(2) { background: var(--craft-window-minimize); }
+.code-window-bar i:nth-child(3) { background: var(--craft-window-zoom); }
+.code-window-bar span { margin-left: 1cqw; }
+.code-window .code { padding: 2.6cqh 2cqw; }
+.code-window .code-line { white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 2ch; text-indent: -2ch; }
+/* Prose in a window: a review thread, a chat reply, a commit message. */
+.window-text { padding: 2.2cqh 2cqw; display: grid; gap: 1.2cqh; }
+.window-text p { margin: 0; font: 400 1.5cqw/1.45 var(--font-text); color: var(--text); }
+.window-text code { font: 400 .92em var(--font-mono); color: var(--accent); overflow-wrap: anywhere; }
 
 /* The accent palette separates keywords, values and numbers.
    It has to read from a projector instead of blending into a monochrome listing. */
@@ -1593,6 +1624,10 @@
   animation: run-type calc(var(--chars) * 40ms) steps(var(--chars), end) var(--run-delay, 0ms) both;
 }
 [data-reveal] .code-run .code-line.is-output { animation: run-appear 1ms linear var(--run-delay, 0ms) both; }
+
+/* A note on the numbers is said once they stop: data-frag="after-count"
+   joins the counters' press and waits for the longest one (deck.js). */
+.frag[data-frag="after-count"][data-reveal] { animation: land var(--count-wait, 0ms) steps(1, end) both; }
 
 /* Digits use tabular width wherever they are compared. */
 .slide-number, .type-metric, .comparison-value, .bullets > li::before,

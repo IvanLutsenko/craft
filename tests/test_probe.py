@@ -108,7 +108,7 @@ CASES: list[tuple[str, str, str, str, str | None]] = [
     ("text clipped by container",
      STATEMENT.format(key="clip", body='<div style="height:4cqh;overflow:hidden"><h2 class="type-hero">A long statement that does not fit the given height</h2></div>'),
      "", "", "text clipped by container"),
-    ("reveal shifts shown content", LIST, ".frag:not([data-shown]) { display: none; }", "", "reveal shifts content already shown"),
+    ("reveal shifts shown content", LIST, ".frag:not([data-shown]) { display: none; } .pad:has(> .slide-title) { justify-content: center; }", "", "reveal shifts content already shown"),
     ("animation with a final frame reaches the end in static mode",
      STATEMENT.format(key="late", body='<h2 class="type-hero late">Statement</h2>'),
      ".late { opacity: 0; } .late { animation: late-in .3s 1s forwards; } @keyframes late-in { to { opacity: 1; } }",

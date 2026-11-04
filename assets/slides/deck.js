@@ -59,6 +59,37 @@
     console.warn('Craft: data-labels on .deck is not valid JSON');
   }
   const statusLabels = { draft: labels.draft, skip: labels.skip };
+  // data-reveal-items="each" on .deck reveals list rows, steps and code
+  // windows one per click, so every slide of a kind behaves the same.
+  const revealEach = deck.dataset.revealItems === 'each';
+  // A command or a kebab-case name split at its hyphen reads as two words.
+  const unbreakable = /(?<![\w/.-])(?:\/[a-z][\w:-]*|[a-z0-9]+(?:-[a-z0-9]+)+)(?![\w-])/g;
+
+  function keepNamesWhole(slide) {
+    const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => node.parentElement.closest('pre, code, script, style, svg, .nowrap, [data-count]')
+        ? NodeFilter.FILTER_REJECT
+        : NodeFilter.FILTER_ACCEPT,
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const text = node.textContent;
+      const parts = [];
+      let last = 0;
+      for (const match of text.matchAll(unbreakable)) {
+        parts.push(text.slice(last, match.index));
+        const name = document.createElement('span');
+        name.className = 'nowrap';
+        name.textContent = match[0];
+        parts.push(name);
+        last = match.index + match[0].length;
+      }
+      if (!last) return;
+      parts.push(text.slice(last));
+      node.replaceWith(...parts.filter((part) => part !== ''));
+    });
+  }
 
   // The author writes each slide once. For the showing we create a page
   // per step, each with one more revealed .frag.
@@ -90,12 +121,25 @@
       canvas.append(badge);
     }
 
+    keepNamesWhole(canvas);
+
+    // A container with its own .frag keeps the author's plan.
+    // data-reveal-items="whole" on the slide or the container shows it at once.
+    if (revealEach && source.dataset.revealItems !== 'whole') {
+      source.querySelectorAll(':is(.bullets, .steps, .code-windows):not([data-reveal-items="whole"])').forEach((list) => {
+        if (list.closest('.frag') || list.querySelector('.frag')) return;
+        [...list.children].forEach((item) => item.classList.add('frag'));
+      });
+    }
+
     // Reveal step. data-frag="with-previous" shows a part on the same
     // press as the previous one, so a label in a sibling container
-    // appears together with its item.
+    // appears together with its item. data-frag="after-count" joins the
+    // same press too, but shows once that step's counters have finished.
     let fragmentCount = 0;
     source.querySelectorAll('.frag').forEach((fragment, index) => {
-      if (index === 0 || fragment.dataset.frag !== 'with-previous') fragmentCount += 1;
+      const joins = fragment.dataset.frag === 'with-previous' || fragment.dataset.frag === 'after-count';
+      if (index === 0 || !joins) fragmentCount += 1;
       fragment.dataset.fragStep = fragmentCount;
     });
     const pages = document.createDocumentFragment();
@@ -166,8 +210,9 @@
     });
 
     const number = slide.querySelector('.slide-number');
+    // Only the current page: a total turns the talk into a countdown.
     if (number) {
-      number.innerHTML = `${page}<span>/ ${total}</span>`;
+      number.textContent = page;
       number.setAttribute('aria-hidden', 'true');
     }
   });
@@ -431,6 +476,12 @@
       element.setAttribute('data-reveal', '');
       animateCounters(element);
     });
+    // after-count waits for the longest counter revealed on this press.
+    // Counters that did not start (motion off, a zero, the overview) wait for nothing.
+    page.style.setProperty('--count-wait', `${Math.max(0, ...[...runningCounters.keys()].map((element) => {
+      const duration = Number(element.dataset.countDuration);
+      return Number.isFinite(duration) && duration >= 0 ? Math.min(duration, 10_000) : 900;
+    }))}ms`);
 
     if (helpPageInput) helpPageInput.value = pad(current + 1);
     if (helpPageTotal) helpPageTotal.textContent = `/ ${total}`;
@@ -840,7 +891,7 @@
       const number = slide.querySelector('.slide-number');
       if (!number) return;
       screenNumbers.set(number, number.innerHTML);
-      number.innerHTML = `${pad(index + 1)}<span>/ ${printSlides.length}</span>`;
+      number.textContent = pad(index + 1);
     });
   }
 
