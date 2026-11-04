@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import re
 import shutil
 from pathlib import Path
@@ -27,6 +28,15 @@ DECK_THEME_STUB = """/* Deck theme. Write it fresh for this talk, see references
    Override --craft-* roles for :root and :root[data-theme="light"],
    then add decor behind the content. */
 """
+
+
+# Fixed control labels per language, one JSON file per base language tag.
+LOCALES = SHARED / "locales"
+
+
+def locale(lang: str) -> dict:
+    path = LOCALES / f"{lang.split('-', 1)[0].lower()}.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
 
 
 def escaped_title(value: str) -> str:
@@ -64,6 +74,9 @@ def scaffold_interface(target: Path, title: str, lang: str, delivery: str, templ
     html = html.replace('href="../shared/tokens.css"', 'href="tokens.css"', 1)
     html = html.replace("{{TITLE}}", escaped_title(title))
     html = html.replace('lang="en"', f'lang="{lang}"', 1)
+    theme = locale(lang).get("themeLabels")
+    if theme:
+        html = html.replace("data-theme-toggle ", f'data-theme-toggle data-label-dark="{theme["dark"]}" data-label-light="{theme["light"]}" ', 1)
     html = apply_delivery(html, delivery, '<link rel="stylesheet" href="tokens.css">')
     (target / "index.html").write_text(html, encoding="utf-8")
 
@@ -105,6 +118,11 @@ def scaffold_slides(target: Path, title: str, lang: str, delivery: str, author: 
         html = re.sub(r'  <section class="slide s-title-card".*?</section>', lambda _: cover_slide(title, author), html, count=1, flags=re.S)
     html = html.replace("{{TITLE}}", escaped_title(title))
     html = html.replace('lang="en"', f'lang="{lang}"', 1)
+    labels = locale(lang)
+    for source, output in labels.get("slideLabels", {}).items():
+        html = html.replace(f'aria-label="{source}"', f'aria-label="{output}"')
+    if labels.get("deckLabels"):
+        html = html.replace('<div class="deck"', f"<div class=\"deck\" data-labels='{json.dumps(labels['deckLabels'], ensure_ascii=False, separators=(',', ':'))}'", 1)
     html = apply_delivery(html, delivery, '<link rel="stylesheet" href="tokens.css">')
     (target / "index.html").write_text(html, encoding="utf-8")
 

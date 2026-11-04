@@ -136,6 +136,18 @@ def test_scaffold_inputs(root: Path) -> None:
     )
     assert result.returncode != 0 and not invalid.exists(), "an invalid --lang created a project"
 
+    # A Russian project gets Russian control labels without manual edits.
+    deck = root / "ru-deck"
+    run(sys.executable, ROOT / "scripts/scaffold.py", deck, "--surface", "slides", "--lang", "ru")
+    document = deck.joinpath("index.html").read_text(encoding="utf-8")
+    english = [label for label in ("Presentation controls", "Slide overview", "Next slide", "Hide control panel") if f'aria-label="{label}"' in document]
+    assert not english, f"English control labels in a ru deck: {english}"
+    russian = json.loads((ROOT / "assets/shared/locales/ru.json").read_text(encoding="utf-8"))
+    assert "data-labels='{" in document and russian["deckLabels"]["draft"] in document, "a ru deck has no deck.js labels"
+    page = root / "ru-page"
+    run(sys.executable, ROOT / "scripts/scaffold.py", page, "--lang", "ru-RU")
+    assert f'data-label-dark="{russian["themeLabels"]["dark"]}"' in page.joinpath("index.html").read_text(encoding="utf-8"), "a ru page has an English theme toggle"
+
 
 def assert_static_failure(project: Path, expected: str) -> None:
     result = subprocess.run(
@@ -165,6 +177,21 @@ def test_static_resources(root: Path) -> None:
     theme = imported / "theme.css"
     theme.write_text(theme.read_text(encoding="utf-8") + '\n@import url("https://example.com/theme.css");\n', encoding="utf-8")
     assert_static_failure(imported, "external asset")
+
+    copied = root / "copied-catalog"
+    copied.mkdir()
+    shutil.copy2(CATALOG / "slides" / "index.html", copied / "index.html")
+    assert_static_failure(copied, "catalog markup")
+
+    modifier = root / "unknown-modifier"
+    scaffold(modifier, "interface", "blank")
+    index = modifier / "index.html"
+    page = index.read_text(encoding="utf-8")
+    notice = '<aside class="notice notice--{}"><span class="notice__mark"></span><p>Text</p></aside></main>'
+    index.write_text(page.replace("</main>", notice.format("warning")), encoding="utf-8")
+    assert_static_failure(modifier, "notice--warning")
+    index.write_text(page.replace("</main>", notice.format("warn")), encoding="utf-8")
+    run(sys.executable, CHECK_PROJECT, modifier, "--static-only")
 
     escaped = root / "escaped-resource"
     scaffold(escaped, "interface", "blank")
@@ -251,6 +278,61 @@ def test_project_check_rejects_detached_page_tabs(root: Path) -> None:
         index.write_text(page.replace("TABS", classes), encoding="utf-8")
         counts = [result["pageTabsCount"] for result in check_project_module.probe_all(index, "interface")]
         assert all((count > 0) == broken for count in counts), f"the validator misjudged tabs under the header: {classes} → {counts}"
+
+
+def test_project_check_finds_overlaps_below_the_fold(root: Path) -> None:
+    # A real page: the theme scrolls smoothly and a long inline path in a
+    # narrow grid column ran over the list next to it, three screens down.
+    project = root / "hidden-overlap"
+    project.mkdir()
+    index = project / "index.html"
+    page = '''<!doctype html><html lang="en" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>html{scroll-behavior:smooth}body{margin:0;font:16px sans-serif}.spacer{height:3000px}.row{display:grid;grid-template-columns:140px 1fr}p{margin:0}code{justify-self:start;white-space:nowrap;CODE}</style>
+<main data-craft-layout="interface"><h1>Routes</h1><div class="spacer"></div>
+<div class="row"><code>#ai / #android / #security / #updates</code><p>Analyzer sends a digest to every channel</p></div></main></html>'''
+    index.write_text(page.replace("CODE", ""), encoding="utf-8")
+    counts = [result["overlapsCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count > 0 for count in counts), f"the validator missed inline code over its neighbor below the fold: {counts}"
+    index.write_text(page.replace("CODE", "white-space:normal"), encoding="utf-8")
+    counts = [result["overlapsCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count == 0 for count in counts), f"the validator reports an overlap after the fix: {counts}"
+
+
+def test_code_block_in_prose_has_one_frame(root: Path) -> None:
+    project = root / "prose-code"
+    scaffold(project, "interface", "blank")
+    index = project / "index.html"
+    block = (ROOT / "assets/interfaces/fragments/code-block.html").read_text(encoding="utf-8")
+    values = {"CODE_LABEL": "Shell", "CODE_ID": "code-1", "CODE": "make check"}
+    block = re.sub(r"\{\{(\w+)\}\}", lambda match: values[match.group(1)], block)
+    index.write_text(index.read_text(encoding="utf-8").replace('<div id="craft-content"></div>', f'<section class="section"><div class="prose"><p>Run:</p>{block}</div></section>'), encoding="utf-8")
+    counts = [result["doubleBordersCount"] for result in check_project_module.probe_all(index, "interface")]
+    assert all(count == 0 for count in counts), f"a code block inside .prose draws a second frame: {counts}"
+
+
+def test_deck_keeps_no_break_space(root: Path) -> None:
+    deck = root / "nbsp-deck"
+    scaffold(deck, "slides", "deck")
+    index = deck / "index.html"
+    html = index.read_text(encoding="utf-8")
+    html = html.replace('<h1 class="type-hero">', '<h1 class="type-hero">Path to&nbsp;result ', 1)
+    index.write_text(html.replace("</body>", "<script>addEventListener('load',()=>setTimeout(()=>{document.title='ready'},300))</script></body>", 1), encoding="utf-8")
+    dom = BrowserSession.shared().dump(index.as_uri(), 1280, 720, "ready")
+    # The fork does not split headings into word spans, so the no-break space stays in the text.
+    assert "to&nbsp;result" in dom or "to\u00a0result" in dom, "deck.js split a no-break space between words"
+
+
+def test_project_check_rejects_demoted_title(root: Path) -> None:
+    project = root / "demoted-title"
+    project.mkdir()
+    index = project / "index.html"
+    page = '''<!doctype html><html lang="en" data-theme="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<style>body{margin:0}h1{font-size:24px}h2{font-size:SIZE}</style>
+<main data-craft-layout="interface"><header><h1>Research</h1></header><h2>Agents in a corporate network</h2></main></html>'''
+    for size, broken in (("40px", True), ("24px", False)):
+        index.write_text(page.replace("SIZE", size), encoding="utf-8")
+        counts = [result["headingScaleCount"] for result in check_project_module.probe_all(index, "interface")]
+        assert all((count > 0) == broken for count in counts), f"the validator misjudged an h2 of {size} under a 24px h1: {counts}"
 
 
 def test_catalog_visual_quality() -> None:
@@ -481,6 +563,10 @@ def main() -> None:
         test_project_check_batches_browser(root)
         test_project_check_rejects_double_boundaries(root)
         test_project_check_rejects_detached_page_tabs(root)
+        test_project_check_finds_overlaps_below_the_fold(root)
+        test_project_check_rejects_demoted_title(root)
+        test_code_block_in_prose_has_one_frame(root)
+        test_deck_keeps_no_break_space(root)
         test_dump_probe_isolated(root)
         test_interface_starter(outputs["interface-blank"], root)
         test_interface_bare(outputs["interface-bare"], root)
