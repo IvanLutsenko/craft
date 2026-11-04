@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Walks every screen state of a Craft deck in Chromium over CDP.
 //
-//   node scripts/deck_probe.mjs path/to/index.html [--shots dir] [--passes a,b] [--quick]
+//   node scripts/deck_probe.mjs path/to/index.html [--shots dir] [--passes a,b] [--quick] [--only key,key]
 //
 // Passes: viewports, frames, light, phone, panel, motion, navigation, video,
 // print. All run by default; --quick drops motion and video. The source
@@ -25,8 +25,13 @@ const option = (name) => {
   const index = args.indexOf(name);
   return index >= 0 ? args[index + 1] : null;
 };
-const index = path.resolve(args.find((value, position) => !value.startsWith('--') && !['--shots', '--registry'].includes(args[position - 1])) || '');
+const index = path.resolve(args.find((value, position) => !value.startsWith('--') && !['--shots', '--registry', '--passes', '--viewports', '--only'].includes(args[position - 1])) || '');
 const shots = option('--shots');
+// --only walks the pages of these slide keys. Comparisons across the deck
+// (service positions, content line, reveal per layout) need every slide and
+// are skipped; the full run before handoff makes them.
+const only = args.includes('--only') ? (option('--only') || '').split(',').filter(Boolean) : null;
+if (only && !only.length) throw Error('--only needs slide keys: --only key1,key2');
 const PASSES = ['viewports', 'frames', 'light', 'phone', 'panel', 'motion', 'navigation', 'video', 'print'];
 const requested = option('--passes');
 // An empty --passes runs only the source checks.
@@ -548,6 +553,9 @@ try {
   report.pages = await page.evaluate('craftDeck.pages()');
   const total = report.pages.length;
   if (!total) throw Error('the deck created no pages');
+  const keys = new Set(report.pages.map((item) => item.key));
+  for (const key of only || []) if (!keys.has(key)) throw Error(`--only: no slide with data-key ${key}`);
+  const wanted = (n) => !only || only.includes(report.pages[n - 1].key);
 
   // Theme roles in both themes: contrast of role pairs and distinct data series.
   for (const theme of ['dark', 'light']) {
@@ -594,7 +602,7 @@ try {
       revealByLayout.set(key, [...(revealByLayout.get(key) || []), source.page]);
     }
   }
-  for (const [key, pages] of revealByLayout) {
+  for (const [key, pages] of only ? [] : revealByLayout) {
     const [layout, mode] = key.split('|');
     const other = revealByLayout.get(`${layout}|${mode === 'by click' ? 'at once' : 'by click'}`);
     if (other && (pages.length < other.length || (pages.length === other.length && mode === 'at once'))) {
@@ -607,6 +615,7 @@ try {
     let previousGeometry = null;
     if (shots) await mkdir(shots, { recursive: true });
     for (let n = 1; n <= total; n += 1) {
+      if (!wanted(n)) { previousGeometry = null; continue; }
       await go(n);
       const at = where(n);
       const result = await page.evaluate('__probe.inspect({ invisible: true })');
@@ -685,7 +694,7 @@ try {
 
     // Content under a title starts on one line across all layouts. A pixel
     // of rounding is the same line.
-    const starts = [...service.content].sort((a, b) => b[1].length - a[1].length);
+    const starts = only ? [] : [...service.content].sort((a, b) => b[1].length - a[1].length);
     if (starts.length > 1) {
       const [line] = starts[0];
       for (const [top, pages] of starts.slice(1)) {
@@ -694,7 +703,7 @@ try {
     }
 
     // Service elements match on every page. Titles match within one layout.
-    for (const [name, map] of [['slide number', service.number], ['title', service.title]]) {
+    for (const [name, map] of only ? [] : [['slide number', service.number], ['title', service.title]]) {
       const byLayout = new Map();
       for (const [signature, pages] of map) {
         // A centered title is a declared variant of its layout (the tab over
@@ -714,6 +723,7 @@ try {
   await pass('light', async () => {
     await page.evaluate("document.documentElement.dataset.theme = 'light'");
     for (let n = 1; n <= total; n += 1) {
+      if (!wanted(n)) continue;
       const has = await page.evaluate(`(async () => { craftDeck.go(${n}); await __probe.settle(); return Boolean(__probe.active().querySelector('.qr')); })()`);
       if (!has) continue;
       const result = await page.evaluate('__probe.inspect()');
@@ -728,6 +738,7 @@ try {
     await open('reveal=steps&motion=static&theme=dark', '1', [390, 844]);
     await page.evaluate("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'h' }))");
     for (let n = 1; n <= total; n += 1) {
+      if (!wanted(n)) continue;
       await go(n);
       const at = where(n);
       const result = await page.evaluate('__probe.inspect()');

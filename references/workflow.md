@@ -32,7 +32,7 @@ python3 scripts/check_project.py <target-folder>          # while editing
 python3 scripts/check_project.py <target-folder> --full   # before handoff
 ```
 
-You need Chromium (`CHROMIUM`) and Node.js. `--static-only` checks sources without a browser. The default renders three widths in both themes, and every deck state in its final frame and on a phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, the light theme and deep links. `--shots` saves every page. `.deck[data-target="desktop"]` (the scaffold default) is checked at desktop width only.
+While editing, check only the slides you touched: at the default level `--only key1,key2` takes seconds, not the whole deck. Run without it after a batch of edits, `--full` before handoff. You need Chromium (`CHROMIUM`) and Node.js. `--static-only` checks sources without a browser. The default renders three widths in both themes, and every deck state in its final frame and on a phone: text inside, no shifts, QR scans. `--full` adds the PDF, and for a deck motion, counters, video, the panel, the light theme and deep links. `--shots` saves every page. `.deck[data-target="desktop"]` (the scaffold default) is checked at desktop width only.
 
 Automation does not check meaning. Also check:
 

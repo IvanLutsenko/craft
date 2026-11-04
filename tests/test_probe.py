@@ -250,6 +250,16 @@ def main() -> None:
             result = subprocess.run([sys.executable, str(CHECK_PROJECT), str(index.parent), "--static-only"], cwd=ROOT, text=True, capture_output=True)
             assert result.returncode == 0, f"{name}: separator was rejected: {result.stdout}{result.stderr}"
             print(f"✓ {name}")
+        # --only walks just the named slide: a clipped statement elsewhere goes unseen.
+        index = build(root, "only", LIST + STATEMENT.format(key="clip", body='<div style="height:4cqh;overflow:hidden"><h2 class="type-hero">A long statement that does not fit the given height</h2></div>'))
+        scoped = subprocess.run([node(), str(PROBE), str(index), "--passes", "frames", "--only", "points"], cwd=ROOT, text=True, capture_output=True, timeout=600)
+        assert scoped.returncode == 0 and not json.loads(scoped.stdout)["errors"], f"--only walked other slides: {scoped.stdout}{scoped.stderr}"
+        assert probe(index, "frames")["errors"], "the clipped statement was not caught without --only"
+        named = subprocess.run([node(), str(PROBE), str(index), "--passes", "frames", "--only", "clip"], cwd=ROOT, text=True, capture_output=True, timeout=600)
+        assert any("text clipped" in item["message"] for item in json.loads(named.stdout)["errors"]), f"--only skipped the named slide: {named.stdout}{named.stderr}"
+        empty = subprocess.run([node(), str(PROBE), str(index), "--passes", "frames", "--only", ""], cwd=ROOT, text=True, capture_output=True, timeout=600)
+        assert empty.returncode != 0 or "--only needs slide keys" in empty.stdout, "an empty --only walked nothing and passed"
+        print("✓ --only walks only the named slides")
         with ThreadPoolExecutor(max_workers=4) as pool:
             for name in pool.map(lambda case: run_case(root, case), CASES):
                 print(f"✓ {name}")
