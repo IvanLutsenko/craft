@@ -15,6 +15,11 @@ This is the Craft identity for interfaces and an unthemed deck. A talk deck gets
 - A border has four sides. A divider has one. Never draw a shared edge twice.
 - Do not add decorative gradients, glow, glass, shadows, rounded panels, repeated cards with icons or terminal styling. The theme already defines the technical layers of background paint. Do not rewrite them to meet this rule.
 - Do not set labels in caps with letter spacing.
+- Icons come from one set, at one size and one stroke width per page. Never draw a glyph by hand: its weight never matches its neighbors. Emoji are content, not icons.
+- An AI feature gets no sparkle, wand, star or purple as its color. Show what the AI does.
+- Never invent a logo. A letter or glyph in a colored square is not a mark: use the real mark or a plain text wordmark.
+- Say it once. The signal appears in one place, not in the heading, the caption and every row.
+- Judge the silhouette before the details: at thumbnail size the subject, its support and the empty space make one picture.
 - Motion explains: a value growing, parts appearing, an object's path, a command being typed. Do not animate decorative loops or page transitions. Motion follows the format's policy: `data-motion` on slides, `prefers-reduced-motion` in interfaces.
 
 ## Tokens
