@@ -252,6 +252,25 @@ def main() -> None:
             result = subprocess.run([sys.executable, str(CHECK_PROJECT), str(index.parent), "--static-only"], cwd=ROOT, text=True, capture_output=True)
             assert result.returncode == 0, f"{name}: separator was rejected: {result.stdout}{result.stderr}"
             print(f"✓ {name}")
+        # after-count joins the counter's click and stays hidden until the count ends.
+        note = METRIC.replace('</div>\n  </div>', '</div>\n    <p class="type-note frag" data-frag="after-count">Note</p>\n  </div>', 1).replace('data-count>', 'data-count data-count-duration="1500">', 1)
+        index = build(root, "after count", METRIC.replace('data-key="numbers"', 'data-key="lead"') + note)
+        script = """
+import { launch, sleep } from '%s';
+const page = await launch();
+await page.navigate(process.argv[1] + '?motion=show#4', "document.readyState === 'complete' && Boolean(window.craftDeck)");
+await page.evaluate('craftDeck.go(5)');
+const state = () => page.evaluate("getComputedStyle(document.querySelector('.slide[data-active] [data-frag=after-count]')).visibility");
+const early = await state(); await sleep(1700); const late = await state();
+console.log(JSON.stringify({ early, late, total: await page.evaluate('craftDeck.total') }));
+process.exit(0);
+""" % (ROOT / "scripts/cdp.mjs").as_uri()
+        result = subprocess.run([node(), "--input-type=module", "-e", script, index.as_uri()], cwd=ROOT, text=True, capture_output=True, timeout=120)
+        seen = json.loads(result.stdout or "{}")
+        assert seen.get("early") == "hidden" and seen.get("late") == "visible", f"after-count did not wait for the counter: {seen} {result.stderr}"
+        mapped = subprocess.run([sys.executable, str(ROOT / "scripts/deck_map.py"), str(index.parent), "--json"], text=True, capture_output=True)
+        assert len(json.loads(mapped.stdout)) == seen["total"] == 5, f"deck_map and deck.js disagree on after-count: {mapped.stdout} {seen}"
+        print("✓ after-count waits for the counter")
         # --only walks just the named slide: a clipped statement elsewhere goes unseen.
         index = build(root, "only", LIST + STATEMENT.format(key="clip", body='<div style="height:4cqh;overflow:hidden"><h2 class="type-hero">A long statement that does not fit the given height</h2></div>'))
         scoped = subprocess.run([node(), str(PROBE), str(index), "--passes", "frames", "--only", "points"], cwd=ROOT, text=True, capture_output=True, timeout=600)

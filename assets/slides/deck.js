@@ -476,8 +476,8 @@
       element.setAttribute('data-reveal', '');
       animateCounters(element);
     });
-    // after-count waits for the longest counter revealed on this press.
-    // Counters that did not start (motion off, a zero, the overview) wait for nothing.
+    // after-count waits for the counters this press started. Counters that
+    // did not start (motion off, a zero, the overview) wait for nothing.
     page.style.setProperty('--count-wait', `${Math.max(0, ...[...runningCounters.keys()].map((element) => {
       const duration = Number(element.dataset.countDuration);
       return Number.isFinite(duration) && duration >= 0 ? Math.min(duration, 10_000) : 900;
