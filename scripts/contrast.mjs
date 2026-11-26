@@ -27,14 +27,22 @@ const PAGE_COLOR = String.raw`
 
 export const PALETTE = String.raw`(() => {
   ${PAGE_COLOR}
-  const probe = document.createElement('i');
-  document.body.append(probe);
-  const role = (name) => { probe.style.color = 'var(' + name + ')'; return parseColor(getComputedStyle(probe).color); };
+  // A missing or invalid role makes color fall back to the inherited one,
+  // so the probe sits in a wrapper with a color no theme uses.
+  const wrapper = document.createElement('b');
+  wrapper.style.color = 'rgb(1, 2, 3)';
+  const probe = wrapper.appendChild(document.createElement('i'));
+  document.body.append(wrapper);
+  const role = (name) => {
+    probe.style.color = 'var(' + name + ')';
+    const value = getComputedStyle(probe).color;
+    return value === 'rgb(1, 2, 3)' ? null : parseColor(value);
+  };
   const roles = {};
   for (const name of ['--craft-bg', '--craft-surface', '--craft-text', '--craft-text-body', '--craft-muted', '--craft-accent',
     '--craft-accent-mark', '--craft-accent-fill', '--craft-on-accent', '--craft-on-accent-muted', '--craft-line-strong',
     '--craft-data-blue', '--craft-data-amber', '--craft-data-green']) roles[name] = role(name);
-  probe.remove();
+  wrapper.remove();
   return roles;
 })()`;
 
@@ -57,6 +65,9 @@ export const TEXT_BOXES = String.raw`(() => {
     if (opacity === 0) continue;
     // Outlined text, like meme lines on a picture, carries its own contrast.
     if (parseFloat(s.webkitTextStrokeWidth) > 0) continue;
+    // Gradient text paints its background into the glyphs: hiding the text
+    // color leaves the letters on screen, so the backdrop cannot be read.
+    if (s.webkitBackgroundClip === 'text' || s.backgroundClip === 'text') continue;
     const color = parseColor(s.color);
     if (!color || color.a === 0) continue;
     color.a *= opacity;
@@ -86,7 +97,7 @@ const blend = (top, bottom) => ({
   b: top.b * top.a + bottom.b * (1 - top.a),
   a: 1,
 });
-export const ratio = (fg, bg) => {
+const ratio = (fg, bg) => {
   const solid = blend(fg, bg);
   const [l1, l2] = [luminance(solid), luminance(bg)];
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
@@ -102,7 +113,10 @@ const toLab = ({ r, g, b }) => {
   const f = (t) => (t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116);
   return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
 };
-const distance = (a, b) => Math.hypot(...toLab(a).map((v, i) => v - toLab(b)[i]));
+const distance = (a, b) => {
+  const [la, lb] = [toLab(a), toLab(b)];
+  return Math.hypot(la[0] - lb[0], la[1] - lb[1], la[2] - lb[2]);
+};
 const deuteranopia = ({ r, g, b }) => {
   const [lr, lg, lb] = [channel(r), channel(g), channel(b)];
   const out = [0.367322 * lr + 0.860646 * lg - 0.227968 * lb, 0.280085 * lr + 0.672501 * lg + 0.047413 * lb, -0.01182 * lr + 0.04294 * lg + 0.968881 * lb];
@@ -116,6 +130,8 @@ const PAIRS = [
   ['--craft-muted', '--craft-bg', 4.5, 'muted labels on the page'],
   ['--craft-accent', '--craft-bg', 4.5, 'accent text on the page'],
   ['--craft-text', '--craft-surface', 4.5, 'text on a panel'],
+  ['--craft-text-body', '--craft-surface', 4.5, 'body text on a panel'],
+  ['--craft-muted', '--craft-surface', 4.5, 'muted labels on a panel'],
   ['--craft-on-accent', '--craft-accent-fill', 4.5, 'text on the accent fill'],
   ['--craft-on-accent-muted', '--craft-accent-fill', 4.5, 'quiet text on the accent fill'],
   ['--craft-accent-mark', '--craft-bg', 3, 'accent marks on the page'],

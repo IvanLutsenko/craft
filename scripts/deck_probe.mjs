@@ -595,13 +595,15 @@ try {
   const wanted = (n) => !only || only.includes(report.pages[n - 1].key);
 
   // Theme roles in both themes: contrast of role pairs and distinct data series.
+  // The deck's own theme comes back afterwards, so the frames below see what deck.js set.
+  const deckTheme = await page.evaluate('document.documentElement.dataset.theme ?? null');
   for (const theme of ['dark', 'light']) {
     await page.evaluate(`document.documentElement.dataset.theme = '${theme}'`);
     const verdict = judgePalette(await page.evaluate(PALETTE), theme);
     verdict.errors.forEach((message) => error('palette', null, message));
     verdict.warnings.forEach((message) => warn('palette', null, message));
   }
-  await page.evaluate("document.documentElement.dataset.theme = 'dark'");
+  await page.evaluate(`(() => { const root = document.documentElement; const theme = ${JSON.stringify(deckTheme)}; if (theme === null) delete root.dataset.theme; else root.dataset.theme = theme; })()`);
 
   const sources = await page.evaluate('__probe.sourceChecks().map(({ matches, ...rest }) => rest)');
   report.sources = sources.length;
@@ -715,18 +717,26 @@ try {
       previousGeometry = geometry;
 
       // Real backdrop under the text: hide the letters, take a frame, measure.
-      const text = await page.evaluate(TEXT_BOXES);
-      if (text.boxes.length) {
-        await page.evaluate(`(() => { const style = document.createElement('style'); style.id = '__probe_hide'; style.textContent = ${JSON.stringify(HIDE_TEXT)}; document.head.append(style); })()`);
-        const frame = await page.send('Page.captureScreenshot', { format: 'png' });
-        await page.evaluate("document.getElementById('__probe_hide').remove()");
-        const image = decodePng(Buffer.from(frame.data, 'base64'));
-        for (const box of text.boxes) {
-          const stats = backdropStats(image, box, text.ratio);
-          if (!stats) continue;
-          const min = box.large ? 3 : 4.5;
-          if (stats.contrast < min - 0.01) error('contrast', at, `text on its real backdrop is ${stats.contrast.toFixed(2)}:1, needs ${min}:1: "${box.text}"`);
-          else if (stats.busy > 0.03) error('contrast', at, `decor or a picture shows under the text (${Math.round(stats.busy * 100)}% of its backdrop): put the text on a panel: "${box.text}"`);
+      // Once per slide, on its last step: every text of the slide is shown by
+      // then, and a frame per step cost +60% on catalog/slides. Text that a
+      // later step swaps out is not measured. Dark theme
+      // only: the light theme repeats the frame cost, and its role pairs are
+      // covered by the palette check above.
+      if (at.step === at.steps) {
+        const text = await page.evaluate(TEXT_BOXES);
+        if (text.boxes.length) {
+          await page.evaluate(`(() => { const style = document.createElement('style'); style.id = '__probe_hide'; style.textContent = ${JSON.stringify(HIDE_TEXT)}; document.head.append(style); })()`);
+          const frame = await page.send('Page.captureScreenshot', { format: 'png' });
+          await page.evaluate("document.getElementById('__probe_hide').remove()");
+          const image = decodePng(Buffer.from(frame.data, 'base64'));
+          for (const box of text.boxes) {
+            const stats = backdropStats(image, box, text.ratio);
+            if (!stats) continue;
+            const min = box.large ? 3 : 4.5;
+            // Only real contrast fails the run. Decor under text may be intended.
+            if (stats.contrast < min - 0.01) error('contrast', at, `text on its real backdrop is ${stats.contrast.toFixed(2)}:1, needs ${min}:1: "${box.text}"`);
+            else if (stats.busy > 0.03) warn('contrast', at, `decor or a picture shows under the text (${Math.round(stats.busy * 100)}% of its backdrop); contrast holds, check that it reads: "${box.text}"`);
+          }
         }
       }
       if (shots) {
